@@ -1,117 +1,101 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --font-inter: "Inter", sans-serif;
-}
-
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+    --background: 0 0% 99%;
+    --foreground: 160 15% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 15% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 15% 12%;
+    --primary: 158 35% 32%;
+    --primary-foreground: 0 0% 100%;
+    --primary-soft: 150 25% 95%;
+    --secondary: 150 15% 96%;
+    --secondary-foreground: 158 35% 25%;
+    --muted: 150 10% 96%;
+    --muted-foreground: 160 8% 45%;
+    --accent: 150 20% 94%;
+    --accent-foreground: 158 35% 25%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 150 10% 90%;
+    --input: 150 10% 90%;
+    --ring: 158 35% 32%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 160 15% 12%;
+    --sidebar-primary: 158 35% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 150 20% 96%;
+    --sidebar-accent-foreground: 158 35% 25%;
+    --sidebar-border: 150 10% 92%;
+    --sidebar-ring: 158 35% 32%;
   }
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+  .dark {
+    --background: 160 15% 8%;
+    --foreground: 150 10% 92%;
+    --card: 160 15% 11%;
+    --card-foreground: 150 10% 92%;
+    --popover: 160 15% 11%;
+    --popover-foreground: 150 10% 92%;
+    --primary: 158 30% 55%;
+    --primary-foreground: 160 15% 8%;
+    --primary-soft: 158 20% 18%;
+    --secondary: 160 12% 16%;
+    --secondary-foreground: 150 10% 92%;
+    --muted: 160 12% 16%;
+    --muted-foreground: 150 8% 65%;
+    --accent: 160 12% 16%;
+    --accent-foreground: 150 10% 92%;
+    --destructive: 0 55% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 160 12% 18%;
+    --input: 160 12% 18%;
+    --ring: 158 30% 55%;
+    --sidebar-background: 160 15% 10%;
+    --sidebar-foreground: 150 10% 92%;
+    --sidebar-primary: 158 30% 55%;
+    --sidebar-primary-foreground: 160 15% 8%;
+    --sidebar-accent: 160 12% 16%;
+    --sidebar-accent-foreground: 150 10% 92%;
+    --sidebar-border: 160 12% 18%;
+    --sidebar-ring: 158 30% 55%;
   }
 }
 
-#root {
-  max-width: 100%;
-  margin: 0 auto;
-  /* text-align: center; */
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html, body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight;
+    font-weight: 600;
+  }
 }
 
-body {
+.moodmate-calendar {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: hsl(var(--primary));
+  --rdp-background-color: hsl(var(--primary-soft));
   margin: 0;
+  font-family: inherit;
 }
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
+.moodmate-calendar .rdp-caption_label { font-weight: 500; font-size: 0.95rem; }
+.moodmate-calendar .rdp-head_cell { color: hsl(var(--muted-foreground)); font-weight: 500; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.moodmate-calendar .rdp-day { color: hsl(var(--foreground)); border-radius: 0.375rem; font-size: 0.85rem; }
+.moodmate-calendar .rdp-day_today:not(.rdp-day_selected) { color: hsl(var(--primary)); font-weight: 600; }
+.moodmate-calendar .rdp-day_outside { color: hsl(var(--muted-foreground)); opacity: 0.4; }
+.moodmate-calendar .rdp-button:hover:not([disabled]):not(.rdp-day_selected) { background: hsl(var(--muted)); }
