@@ -1,5 +1,5 @@
 // Tipe untuk format standar response dari Backend
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   status: string; // 'success' atau 'error'
   message: string;
   data: T;

@@ -6,6 +6,8 @@ import { Leaf, Loader2 } from "lucide-react";
 import { FormEvent } from "react";
 import { toast } from "sonner";
 import { useRegisterMutation } from "@/hooks/api/useAuth";
+import { isAxiosError } from "axios";
+import { ApiError } from "@/types/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -31,8 +33,12 @@ const Register = () => {
           navigate("/login");
         }
       },
-      onError: (err: any) => {
-        toast.error(err.response?.data?.message || "Registration failed. Please try again.");
+      onError: (err: unknown) => {
+        let errorMsg = "Registration failed. Please try again.";
+        if (isAxiosError<ApiError>(err) && err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        }
+        toast.error(errorMsg);
       }
     });
   };

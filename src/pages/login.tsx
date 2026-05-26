@@ -6,6 +6,8 @@ import { Leaf, Loader2 } from "lucide-react";
 import { FormEvent } from "react";
 import { toast } from "sonner";
 import { useLoginMutation } from "@/hooks/api/useAuth";
+import { isAxiosError } from "axios";
+import { ApiError } from "@/types/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,8 +27,12 @@ const Login = () => {
           navigate("/dashboard/home");
         }
       },
-      onError: (err: any) => {
-        toast.error(err.response?.data?.message || "Invalid email or password");
+      onError: (err: unknown) => {
+        let errorMsg = "Invalid email or password";
+        if (isAxiosError<ApiError>(err) && err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        }
+        toast.error(errorMsg);
       }
     });
   };
