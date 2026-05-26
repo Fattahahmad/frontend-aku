@@ -2,15 +2,35 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Leaf } from "lucide-react";
+import { Leaf, Loader2 } from "lucide-react";
 import { FormEvent } from "react";
+import { toast } from "sonner";
+import { useLoginMutation } from "@/hooks/api/useAuth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { mutate, isPending } = useLoginMutation();
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard/home");
+    const form = e.target as HTMLFormElement;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+
+    mutate({ email, password }, {
+      onSuccess: (res) => {
+        if (res.status === "success") {
+          localStorage.setItem("access_token", res.data.token);
+          toast.success(res.message || "Welcome back!");
+          navigate("/dashboard/home");
+        }
+      },
+      onError: (err: any) => {
+        toast.error(err.response?.data?.message || "Invalid email or password");
+      }
+    });
   };
+
   return (
     <div className="min-h-screen grid md:grid-cols-2 bg-background">
       <div className="hidden md:block relative">
@@ -32,13 +52,16 @@ const Login = () => {
           <form onSubmit={onSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" className="h-11" required />
+              <Input id="email" name="email" type="email" placeholder="you@example.com" className="h-11" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">Password</Label>
-              <Input id="password" type="password" placeholder="••••••••" className="h-11" required />
+              <Input id="password" name="password" type="password" placeholder="••••••••" className="h-11" required />
             </div>
-            <Button type="submit" className="w-full h-11 font-medium">Sign in</Button>
+            <Button type="submit" className="w-full h-11 font-medium" disabled={isPending}>
+              {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {isPending ? "Signing in..." : "Sign in"}
+            </Button>
           </form>
           <p className="text-sm text-muted-foreground mt-8">
             Don't have an account? <Link to="/register" className="text-foreground font-medium hover:underline">Sign up</Link>

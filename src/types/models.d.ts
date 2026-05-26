@@ -2,7 +2,8 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  createdAt: string;
+  current_streak: number;
+  created_at: string;
 }
 
 export interface MoodEntry {
