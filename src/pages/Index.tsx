@@ -42,18 +42,18 @@ const Index = () => {
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-soft text-primary text-xs font-medium">
           </span>
           <h1 className="text-4xl md:text-6xl font-semibold leading-[1.1] tracking-tight">
-            Understand your emotions.<br />
-            <span className="text-primary">Live more intentionally.</span>
+            Sadari emosimu.<br />
+            <span className="text-primary">Hidup dengan penuh makna.</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
-            MoodMate is a quiet daily companion — track moods, write freely, and uncover gentle patterns in how you feel.
+            MoodMate adalah pendamping harian yang lembut — pantau suasana hati, menulis tanpa batas, dan menemukan pola emosimu.  
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Link to="/register">
-              <Button size="lg" className="px-8">Start tracking</Button>
+              <Button size="lg" className="px-8">Mulai Melacak</Button>
             </Link>
             <a href="#features">
-              <Button size="lg" variant="outline" className="px-8">Learn more</Button>
+              <Button size="lg" variant="outline" className="px-8">Pelajari lebih lanjut</Button>
             </a>
           </div>
         </div>
@@ -69,14 +69,14 @@ const Index = () => {
 
       <section id="features" className="container mx-auto px-6 py-24 border-t border-border">
         <div className="max-w-2xl mb-16">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">A gentle path to self-awareness</h2>
-          <p className="text-muted-foreground mt-4 text-lg">Everything you need, nothing you don't.</p>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Jalan lembut menuju kesadaran diri  </h2>
+          <p className="text-muted-foreground mt-4 text-lg">Segala yang kamu butuhkan, tanpa hal yang tidak perlu.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-px bg-border border border-border rounded-md overflow-hidden">
           {[
-            { icon: NotebookPen, title: "Daily check-ins", desc: "A short ritual to capture how you truly feel each day." },
-            { icon: Brain, title: "AI emotion detection", desc: "Quiet insights that read between the lines of your journal." },
-            { icon: LineChart, title: "Weekly insights", desc: "Clear charts and reflections delivered every Sunday." },
+            { icon: NotebookPen, title: "Check-in harian", desc: "Ritual singkat untuk menangkap perasaanmu yang sebenarnya setiap hari." },
+            { icon: Brain, title: "Deteksi emosi AI", desc: "Wawasan tenang yang membaca di antara baris tulisan jurnalmu." },
+            { icon: LineChart, title: "Insight mingguan", desc: "Grafik jelas dan refleksi yang hadir setiap hari Minggu." },
           ].map((f, i) => (
             <div key={i} className="bg-card p-10">
               <f.icon className="w-6 h-6 text-primary mb-6" strokeWidth={1.5} />
@@ -89,14 +89,14 @@ const Index = () => {
 
       <section id="how" className="container mx-auto px-6 py-24 border-t border-border">
         <div className="max-w-2xl mb-16">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">How it works</h2>
-          <p className="text-muted-foreground mt-4 text-lg">Three small steps. A few quiet minutes a day.</p>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Cara kerjanya</h2>
+          <p className="text-muted-foreground mt-4 text-lg">Tiga langkah kecil. Beberapa menit tenang setiap hari.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           {[
-            { n: "01", title: "Check in", desc: "Pick a mood that fits. Write a sentence — or a page." },
-            { n: "02", title: "Notice patterns", desc: "Quiet weekly insights reveal what shapes your days." },
-            { n: "03", title: "Care for yourself", desc: "Gentle suggestions and breathing practices, when you need them." },
+            { n: "01", title: "Check in", desc: "Pilih suasana hati yang sesuai. Tulis satu kalimat — atau satu halaman." },
+            { n: "02", title: "Perhatikan pola", desc: "Wawasan tenang yang mengungkap apa yang membentuk hari-harimu." },
+            { n: "03", title: "Rawat dirimu", desc: "Saran-saran lembut dan latihan pernapasan, ketika kamu membutuhkannya." },
           ].map((s) => (
             <div key={s.n} className="space-y-4">
               <p className="text-xs font-medium text-primary tracking-widest">{s.n}</p>
@@ -109,14 +109,14 @@ const Index = () => {
 
       <section id="testimonials" className="container mx-auto px-6 py-24 border-t border-border">
         <div className="max-w-2xl mb-16">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">A few quiet words</h2>
-          <p className="text-muted-foreground mt-4 text-lg">From people building a daily practice.</p>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Beberapa kata lembut</h2>
+          <p className="text-muted-foreground mt-4 text-lg">Dari orang-orang yang membangun praktik harian.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { q: "MoodMate has become my morning ritual. The insights are quietly accurate.", n: "Sophie L.", r: "Designer" },
-            { q: "It feels less like an app and more like a thoughtful friend who listens carefully.", n: "Daniel R.", r: "Writer" },
-            { q: "I finally understand the rhythm of my weeks. Subtle, never overwhelming.", n: "Mira K.", r: "Therapist" },
+            { q: "MoodMate telah menjadi ritual pagi saya. Wawasannya tenang namun tepat.", n: "Rafi N.", r: "AI Engineer" },
+            { q: "Rasanya bukan seperti aplikasi, melainkan seperti teman yang penuh perhatian dan mendengarkan dengan saksama.", n: "Nanda D.", r: "Data Science" },
+            { q: "Akhirnya saya memahami ritme minggu-minggu saya. Halus, tidak pernah berlebihan.", n: "Tasya.", r: "Data Science" },
           ].map((t, i) => (
             <figure key={i} className="border border-border bg-card rounded-md p-8">
               <Quote className="w-5 h-5 text-primary mb-5" strokeWidth={1.5} />
@@ -133,13 +133,13 @@ const Index = () => {
       <section className="container mx-auto px-6 pb-24">
         <div className="bg-primary-soft border border-border rounded-md px-8 md:px-16 py-16 md:py-20 text-center">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight max-w-xl mx-auto">
-            Begin a kinder relationship with your days.
+            Mulai hubungan yang lebih baik dengan hari-harimu.
           </h2>
           <p className="text-muted-foreground mt-4 text-lg max-w-lg mx-auto">
-            Free to start. No noise. Just a small, steady space for you.
+            Gratis untuk dimulai. Tanpa gangguan. Hanya ruang kecil dan stabil untukmu.
           </p>
           <Link to="/register" className="inline-block mt-8">
-            <Button size="lg" className="px-8">Sign up free</Button>
+            <Button size="lg" className="px-8">Daftar Gratis!</Button>
           </Link>
         </div>
       </section>
@@ -149,7 +149,7 @@ const Index = () => {
           <div className="flex items-center gap-2 text-foreground font-medium">
             <Leaf className="w-4 h-4 text-primary" strokeWidth={1.75} /> MoodMate
           </div>
-          <p>© 2026 MoodMate. Made with care.</p>
+          <p>© 2026 MoodMate. Dibuat dengan cinta.</p>
         </div>
       </footer>
     </div>

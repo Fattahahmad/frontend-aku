@@ -14,6 +14,8 @@ import Analytics from "./pages/dashboard/Analytics.tsx";
 import Settings from "./pages/dashboard/Settings.tsx";
 import History from "./pages/dashboard/History.tsx";
 import Breathe from "./pages/dashboard/Breathe.tsx";
+import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
+import { PublicRoute } from "./components/PublicRoute.tsx";
 
 const queryClient = new QueryClient();
 
@@ -25,17 +27,24 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<DashboardHome />} />
-            <Route path="home" element={<DashboardHome />} />
-            <Route path="checkin" element={<CheckIn />} />
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="history" element={<History />} />
-            <Route path="breathe" element={<Breathe />} />
-            <Route path="settings" element={<Settings />} />
+          
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Route>
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<DashboardHome />} />
+              <Route path="home" element={<DashboardHome />} />
+              <Route path="checkin" element={<CheckIn />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="history" element={<History />} />
+              <Route path="breathe" element={<Breathe />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+          </Route>
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

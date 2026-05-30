@@ -1,36 +1,83 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Play, Pause } from "lucide-react";
+import { Play, Pause, Volume2 } from "lucide-react";
 
 const PHASES = [
-  { label: "Breathe in", duration: 4000 },
-  { label: "Hold", duration: 2000 },
-  { label: "Breathe out", duration: 6000 },
+  { label: "Tarik napas", duration: 4000 },
+  { label: "Tahan", duration: 2000 },
+  { label: "Hembuskan", duration: 6000 },
 ] as const;
 
+const CALM_MUSIC_URL = "/sounds/calm-ambient.mp3";
+
 const Breathe = () => {
-  const [running, setRunning] = useState(true);
+  const location = useLocation();
+  const [running, setRunning] = useState(false);
   const [phaseIdx, setPhaseIdx] = useState(0);
-  const timer = useRef<number | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Reset state when route changes or component unmounts
+  useEffect(() => {
+    return () => {
+      setRunning(false);
+      setPhaseIdx(0);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio(CALM_MUSIC_URL);
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.3;
+    }
+  }, []);
 
   useEffect(() => {
     if (!running) return;
-    timer.current = window.setTimeout(() => {
+
+    const currentPhase = PHASES[phaseIdx];
+    timeoutRef.current = setTimeout(() => {
       setPhaseIdx((i) => (i + 1) % PHASES.length);
-    }, PHASES[phaseIdx].duration);
+    }, currentPhase.duration);
+
     return () => {
-      if (timer.current) window.clearTimeout(timer.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, [phaseIdx, running]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      if (running) {
+        audioRef.current.play().catch((err) => {
+          console.warn('Audio play failed:', err);
+        });
+      } else {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    }
+  }, [running]);
+
   const phase = PHASES[phaseIdx];
-  const scale = phase.label === "Breathe in" ? 1 : phase.label === "Hold" ? 1 : 0.55;
+  const scale = phase.label === "Tarik napas" ? 1 : phase.label === "Tahan" ? 1 : 0.55;
+
+  const handleToggle = () => {
+    setRunning((prev) => !prev);
+  };
 
   return (
     <div className="space-y-10">
       <header>
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Breathing exercise</h1>
-        <p className="text-muted-foreground mt-3 text-lg">Follow the circle. Soften your shoulders.</p>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Latihan pernapasan</h1>
+        <p className="text-muted-foreground mt-3 text-lg">Ikuti lingkaran. Lentulkan bahu.</p>
       </header>
 
       <section className="border border-border rounded-md bg-card p-10 md:p-16 flex flex-col items-center gap-10">
@@ -46,22 +93,28 @@ const Breathe = () => {
             }}
           />
           <span className="relative text-primary font-medium text-lg tracking-wide">
-            {phase.label}
+            {running ? phase.label : "Siap"}
           </span>
         </div>
         <Button
           variant="outline"
-          onClick={() => setRunning((r) => !r)}
+          onClick={handleToggle}
           className="h-11 px-6"
         >
           {running ? (
-            <><Pause className="w-4 h-4 mr-2" strokeWidth={1.75} /> Pause</>
+            <><Pause className="w-4 h-4 mr-2" strokeWidth={1.75} /> Jeda</>
           ) : (
-            <><Play className="w-4 h-4 mr-2" strokeWidth={1.75} /> Resume</>
+            <><Play className="w-4 h-4 mr-2" strokeWidth={1.75} /> Mulai</>
           )}
         </Button>
+
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Volume2 className="w-4 h-4" />
+          <span>Musik ambient tenang akan dimainkan saat latihan</span>
+        </div>
+
         <p className="text-sm text-muted-foreground text-center max-w-sm">
-          Four seconds in. Two seconds hold. Six seconds out. Repeat for a minute.
+          Empat detik tarik. Dua detik tahan. Enam detik hembuskan. Ulangi untuk satu menit.
         </p>
       </section>
     </div>

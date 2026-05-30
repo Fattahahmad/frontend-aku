@@ -15,10 +15,13 @@ export const apiClient = axios.create({
 // Interceptor untuk menyisipkan token pada setiap request
 apiClient.interceptors.request.use(
   (config) => {
-    // Nanti token bisa diambil dari localStorage atau state management
     const token = localStorage.getItem('access_token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Jika FormData, hapus Content-Type biar Axios set boundary otomatis
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
     }
     return config;
   },

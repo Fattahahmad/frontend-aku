@@ -53,8 +53,8 @@ const Login = () => {
             <Leaf className="w-5 h-5 text-primary" strokeWidth={1.75} />
             MoodMate
           </Link>
-          <h1 className="text-3xl font-semibold tracking-tight">Welcome back</h1>
-          <p className="text-muted-foreground mt-2 mb-10">Sign in to continue your practice.</p>
+          <h1 className="text-3xl font-semibold tracking-tight">Selamat datang!</h1>
+          <p className="text-muted-foreground mt-2 mb-10">Masuk untuk melanjutkan praktik harianmu.</p>
           <form onSubmit={onSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">Email</Label>
@@ -70,7 +70,7 @@ const Login = () => {
             </Button>
           </form>
           <p className="text-sm text-muted-foreground mt-8">
-            Don't have an account? <Link to="/register" className="text-foreground font-medium hover:underline">Sign up</Link>
+            Tidak punya akun? <Link to="/register" className="text-foreground font-medium hover:underline">Daftar</Link>
           </p>
         </div>
       </div>

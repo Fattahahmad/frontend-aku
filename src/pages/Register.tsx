@@ -59,11 +59,11 @@ const Register = () => {
             <Leaf className="w-5 h-5 text-primary" strokeWidth={1.75} />
             MoodMate
           </Link>
-          <h1 className="text-3xl font-semibold tracking-tight">Create your account</h1>
-          <p className="text-muted-foreground mt-2 mb-10">Begin a gentle daily practice.</p>
+          <h1 className="text-3xl font-semibold tracking-tight">Buat akunmu</h1>
+          <p className="text-muted-foreground mt-2 mb-10">Mulai praktik harian yang lembut.</p>
           <form onSubmit={onSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">Full name</Label>
+              <Label htmlFor="name" className="text-sm font-medium">Nama lengkap</Label>
               <Input id="name" name="name" type="text" placeholder="Alex Morgan" className="h-11" required />
             </div>
             <div className="space-y-2">
@@ -75,7 +75,7 @@ const Register = () => {
               <Input id="password" name="password" type="password" placeholder="••••••••" className="h-11" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirm" className="text-sm font-medium">Confirm password</Label>
+              <Label htmlFor="confirm" className="text-sm font-medium">Konfirmasi password</Label>
               <Input id="confirm" name="confirm" type="password" placeholder="••••••••" className="h-11" required />
             </div>
             <Button type="submit" className="w-full h-11 font-medium" disabled={isPending}>
@@ -84,7 +84,7 @@ const Register = () => {
             </Button>
           </form>
           <p className="text-sm text-muted-foreground mt-8">
-            Already have an account? <Link to="/login" className="text-foreground font-medium hover:underline">Log in</Link>
+            Tidak punya akun? <Link to="/login" className="text-foreground font-medium hover:underline">Log in</Link>
           </p>
         </div>
       </div>
