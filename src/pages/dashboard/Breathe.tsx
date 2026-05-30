@@ -9,7 +9,7 @@ const PHASES = [
   { label: "Hembuskan", duration: 6000 },
 ] as const;
 
-const CALM_MUSIC_URL = "/sounds/calm-ambient.mp3";
+const CALM_MUSIC_URL = "https://urbamgipmfpmasxxlani.supabase.co/storage/v1/object/public/assets/music/calm-ambient.mp3";
 
 const Breathe = () => {
   const location = useLocation();
