@@ -12,8 +12,7 @@ export interface MoodEntry {
   moodId: number;
   text: string;
   tags: string[];
-  aiInsight?: string; // Berisi insight dari AI jika ada
+  aiInsight?: string; 
   createdAt: string;
 }
 
-// Anda dapat menambahkan lebih banyak model seiring dengan perkembangan backend

@@ -39,8 +39,6 @@ const Index = () => {
 
       <section className="container mx-auto px-6 py-20 md:py-28 grid md:grid-cols-2 gap-16 items-center">
         <div className="space-y-8">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-soft text-primary text-xs font-medium">
-          </span>
           <h1 className="text-4xl md:text-6xl font-semibold leading-[1.1] tracking-tight">
             Sadari emosimu.<br />
             <span className="text-primary">Hidup dengan penuh makna.</span>
