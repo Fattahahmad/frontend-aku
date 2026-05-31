@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getSummary, getCalendar, getLogByDate, createLog, updateLog, deleteLog, getAllLogs, getSuggestion, CreateLogPayload } from '../../api/logs.api';
+import { getSummary, getCalendar, getLogByDate, createLog, updateLog, deleteLog, getAllLogs, getSuggestion, CreateLogPayload } from '@moodmate/api/logs.api';
 
 export const useSummary = () => {
   return useQuery({

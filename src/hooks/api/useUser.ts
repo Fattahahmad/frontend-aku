@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getUserProfile, updateUserProfile, logoutUser } from '../../api/user.api';
+import { getUserProfile, updateUserProfile, logoutUser } from '@moodmate/api/user.api';
 
 export const useUserProfile = () => {
   return useQuery({

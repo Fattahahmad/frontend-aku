@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { loginFn, registerFn, LoginPayload, RegisterPayload } from '../../api/auth.api';
+import { loginFn, registerFn, LoginPayload, RegisterPayload } from '@moodmate/api/auth.api';
 
 export const useLoginMutation = () => {
   return useMutation({

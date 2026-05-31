@@ -1,6 +1,6 @@
 import apiClient from './client';
-import { ApiResponse } from '../types/api';
-import { User } from '../types/models';
+import { ApiResponse } from '@moodmate/types/api';
+import { User } from '@moodmate/types/models';
 
 export interface RegisterPayload {
   name: string;
