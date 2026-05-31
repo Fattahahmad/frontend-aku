@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@moodmate/components/ui/button";
 import { Leaf, NotebookPen, Brain, LineChart, Menu, X, Quote } from "lucide-react";
 import { useState } from "react";
 

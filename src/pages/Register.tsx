@@ -1,13 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@moodmate/components/ui/button";
+import { Input } from "@moodmate/components/ui/input";
+import { Label } from "@moodmate/components/ui/label";
 import { Leaf, Loader2 } from "lucide-react";
 import { FormEvent } from "react";
 import { toast } from "sonner";
-import { useRegisterMutation } from "@/hooks/api/useAuth";
+import { useRegisterMutation } from "@moodmate/hooks/api/useAuth";
 import { isAxiosError } from "axios";
-import { ApiError } from "@/types/api";
+import { ApiError } from "@moodmate/types/api";
 
 const Register = () => {
   const navigate = useNavigate();

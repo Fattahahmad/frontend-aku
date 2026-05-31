@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Leaf, Home, NotebookPen, BarChart3, Settings as SettingsIcon, BookOpen, Wind } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@moodmate/lib/utils";
 
 const nav = [
   { to: "/dashboard/home", label: "Home", icon: Home },

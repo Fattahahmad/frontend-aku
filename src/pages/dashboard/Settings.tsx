@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Button } from "@moodmate/components/ui/button";
+import { Switch } from "@moodmate/components/ui/switch";
+import { Label } from "@moodmate/components/ui/label";
 import { LogOut, Pencil } from "lucide-react";
 import { useState, useRef } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@moodmate/components/ui/dialog";
+import { Input } from "@moodmate/components/ui/input";
 import { Loader2 } from "lucide-react";
-import { useUserProfile, useUpdateUserProfile, useLogout } from "@/hooks/api/useUser";
+import { useUserProfile, useUpdateUserProfile, useLogout } from "@moodmate/hooks/api/useUser";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 

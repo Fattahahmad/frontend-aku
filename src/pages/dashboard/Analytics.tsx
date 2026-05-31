@@ -2,8 +2,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Sparkles, BarChart3, ArrowRight } from "lucide-react";
 import { useQuery } from '@tanstack/react-query';
 import { getWeeklyInsights } from '../../api/analytics.api';
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@moodmate/components/ui/card";
+import { Button } from "@moodmate/components/ui/button";
 import { Link } from "react-router-dom";
 
 const Analytics = () => {

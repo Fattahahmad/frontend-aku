@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@moodmate/components/ui/button";
 import { Calendar as CalendarIcon, SmilePlus, Flame, Sparkles, ArrowRight, Wind, Loader2 } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -10,11 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { moods, getMood } from "@/lib/moods";
-import { useSummary, useCalendar, useLogByDate } from "@/hooks/api/useLogs";
+} from "@moodmate/components/ui/dialog";
+import { moods, getMood } from "@moodmate/lib/moods";
+import { useSummary, useCalendar, useLogByDate } from "@moodmate/hooks/api/useLogs";
 import { format } from "date-fns";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@moodmate/components/ui/card";
 
 type LoggedEntry = {
   moodId: number;
@@ -129,7 +129,8 @@ const Home = () => {
               components={{
                 DayContent: ({ date }) => {
                   const entry = loggedDays.get(date.toDateString());
-                  const Icon = entry ? moods[entry.moodId]?.icon : null;
+                  // Adjust indexing: backend mood_score (1-5) to frontend moods array (0-4)
+                  const Icon = entry ? moods.find(m => m.id === entry.moodId)?.icon : null;
                   return (
                     <div className="flex flex-col items-center justify-center leading-none gap-0.5">
                       <span>{date.getDate()}</span>

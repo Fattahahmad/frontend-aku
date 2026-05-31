@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@moodmate/components/ui/button";
 import { Play, Pause, Volume2 } from "lucide-react";
 
 const PHASES = [

@@ -23,7 +23,7 @@
     "noFallthroughCasesInSwitch": false,
 
     "paths": {
-      "@/*": ["./src/*"]
+      "@moodmate/*": ["./src/*"]
     }
   },
   "include": ["src"]

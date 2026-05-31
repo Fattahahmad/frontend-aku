@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+import { Button } from "@moodmate/components/ui/button";
+import { Textarea } from "@moodmate/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@moodmate/components/ui/dialog";
+import { cn } from "@moodmate/lib/utils";
 import { toast } from "sonner";
 import { Sparkles, Loader2 } from "lucide-react";
-import { moods } from "@/lib/moods";
-import { useCreateLog, useLogByDate, useUpdateLog } from "@/hooks/api/useLogs";
+import { moods } from "@moodmate/lib/moods";
+import { useCreateLog, useLogByDate, useUpdateLog } from "@moodmate/hooks/api/useLogs";
 import { isAxiosError } from "axios";
 
 const CheckIn = () => {

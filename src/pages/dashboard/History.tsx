@@ -2,17 +2,17 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@moodmate/components/ui/button";
+import { Card, CardContent } from "@moodmate/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { useAllLogs, useDeleteLog } from "@/hooks/api/useLogs";
-import { getMood } from "@/lib/moods";
+} from "@moodmate/components/ui/dialog";
+import { useAllLogs, useDeleteLog } from "@moodmate/hooks/api/useLogs";
+import { getMood } from "@moodmate/lib/moods";
 import { format, isToday } from "date-fns";
 import { ArrowRight, CalendarDays } from "lucide-react";
 
