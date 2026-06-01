@@ -99,3 +99,4 @@
 .moodmate-calendar .rdp-day_today:not(.rdp-day_selected) { color: hsl(var(--primary)); font-weight: 600; }
 .moodmate-calendar .rdp-day_outside { color: hsl(var(--muted-foreground)); opacity: 0.4; }
 .moodmate-calendar .rdp-button:hover:not([disabled]):not(.rdp-day_selected) { background: hsl(var(--muted)); }
+.moodmate-calendar .rdp-day_logged { position: relative; }
