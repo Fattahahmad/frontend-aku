@@ -35,9 +35,11 @@ const Home = () => {
   const today = new Date();
   const [selectedEntry, setSelectedEntry] = useState<{ date: string; entry: LoggedEntry } | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [calendarMonth, setCalendarMonth] = useState(today.getMonth() + 1);
+  const [calendarYear, setCalendarYear] = useState(today.getFullYear());
 
   const { data: summaryData, isLoading: summaryLoading, error: summaryError } = useSummary();
-  const { data: calendarData, isLoading: calendarLoading } = useCalendar(today.getMonth() + 1, today.getFullYear());
+  const { data: calendarData, isLoading: calendarLoading } = useCalendar(calendarMonth, calendarYear);
   const { data: logDetail, isLoading: logDetailLoading } = useLogByDate(selectedDate || "");
 
   const loggedDays = useMemo(() => {
@@ -124,30 +126,33 @@ const Home = () => {
               <Loader2 className="w-8 h-8 text-primary animate-spin" strokeWidth={1.5} />
             </div>
           ) : (
-            <DayPicker
-              mode="single"
-              defaultMonth={today}
-              showOutsideDays
-              onDayClick={(date) => {
-                const dateStr = format(date, "yyyy-MM-dd");
-                setSelectedDate(dateStr);
-              }}
-              className="moodmate-calendar pointer-events-auto"
-              modifiers={loggedDays.size > 0 ? { logged: Array.from(loggedDays.keys()).map(d => new Date(d)) } : {}}
-              components={{
-                DayContent: ({ date }) => {
-                  const entry = loggedDays.get(date.toDateString());
-                  // Adjust indexing: backend mood_score (1-5) to frontend moods array (0-4)
-                  const Icon = entry ? moods.find(m => m.id === entry.moodId)?.icon : null;
-                  return (
-                    <div className="flex flex-col items-center justify-center leading-none gap-0.5">
-                      <span>{date.getDate()}</span>
-                      {Icon && <Icon className="w-3 h-3 text-primary" strokeWidth={1.75} />}
-                    </div>
-                  );
-                },
-              }}
-            />
+<DayPicker
+               mode="single"
+               month={new Date(calendarYear, calendarMonth - 1)}
+               onMonthChange={(newMonth) => {
+                 setCalendarMonth(newMonth.getMonth() + 1);
+                 setCalendarYear(newMonth.getFullYear());
+               }}
+               showOutsideDays
+               onDayClick={(date) => {
+                 const dateStr = format(date, "yyyy-MM-dd");
+                 setSelectedDate(dateStr);
+               }}
+               className="moodmate-calendar pointer-events-auto"
+               modifiers={loggedDays.size > 0 ? { logged: Array.from(loggedDays.keys()).map(d => new Date(d)) } : {}}
+               components={{
+                 DayContent: ({ date }) => {
+                   const entry = loggedDays.get(date.toDateString());
+                   const Icon = entry ? moods.find(m => m.id === entry.moodId)?.icon : null;
+                   return (
+                     <div className="flex flex-col items-center justify-center leading-none gap-0.5">
+                       <span>{date.getDate()}</span>
+                       {Icon && <Icon className="w-3 h-3 text-primary" strokeWidth={1.75} />}
+                     </div>
+                   );
+                 },
+               }}
+             />
           )}
         </div>
         <Link
