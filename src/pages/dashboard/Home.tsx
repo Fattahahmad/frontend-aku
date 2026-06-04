@@ -16,6 +16,14 @@ import { useSummary, useCalendar, useLogByDate } from "@moodmate/hooks/api/useLo
 import { format } from "date-fns";
 import { Card, CardContent } from "@moodmate/components/ui/card";
 
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Selamat pagi";
+  if (hour < 15) return "Selamat siang";
+  if (hour < 18) return "Selamat sore";
+  return "Selamat malam";
+};
+
 type LoggedEntry = {
   moodId: number;
   text: string;
@@ -72,7 +80,7 @@ const Home = () => {
       <header>
         <p className="text-sm text-muted-foreground">{format(today, "EEEE, MMMM d")}</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mt-2">
-          Selamat pagi, {summaryLoading ? "..." : summaryData?.data?.user_name ?? "teman"}.
+          {getGreeting()}, {summaryLoading ? "..." : summaryData?.data?.user_name ?? "teman"}.
         </h1>
         <p className="text-muted-foreground mt-3 text-lg">Cuplikan hening minggu ini.</p>
       </header>
