@@ -20,7 +20,7 @@ const Settings = () => {
 
   const { data: profileData, isLoading: profileLoading } = useUserProfile();
   const { mutate: updateProfile, isPending: updatePending } = useUpdateUserProfile();
-  const { mutate: logoutApi } = useLogout();
+  const { mutate: logoutApi, isPending: logoutPending } = useLogout();
 
   const toggleDark = (v: boolean) => {
     setDark(v);
@@ -31,11 +31,14 @@ const Settings = () => {
     logoutApi(undefined, {
       onSuccess: () => {
         localStorage.removeItem("access_token");
+        toast.success("Berhasil keluar!");
         navigate("/login");
       },
-      onError: () => {
+      onError: (error: unknown) => {
+        console.error("Logout error:", error);
         localStorage.removeItem("access_token");
-        navigate("/login");
+        toast.error("Gagal keluar, tapi anda akan di-redirect.");
+        setTimeout(() => navigate("/login"), 1000);
       },
     });
   };
@@ -115,9 +118,11 @@ const Settings = () => {
       <Button
         variant="ghost"
         onClick={handleLogout}
-        className="text-destructive hover:text-destructive hover:bg-destructive/5 font-medium"
+        disabled={logoutPending}
+        className="text-destructive hover:text-destructive hover:bg-destructive/5 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <LogOut className="w-4 h-4 mr-2" strokeWidth={1.75} /> Keluar
+        {logoutPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" strokeWidth={1.75} />}
+        <LogOut className="w-4 h-4 mr-2" strokeWidth={1.75} /> {logoutPending ? "Keluar..." : "Keluar"}
       </Button>
 
       <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>

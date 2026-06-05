@@ -19,7 +19,12 @@ export const useUpdateUserProfile = () => {
 };
 
 export const useLogout = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => logoutUser(),
+    onSuccess: () => {
+      // Clear all cached queries
+      queryClient.clear();
+    },
   });
 };
