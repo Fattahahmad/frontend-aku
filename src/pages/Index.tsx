@@ -56,12 +56,12 @@ const Index = () => {
             </a>
           </div>
         </div>
-        <div className="relative">
+        <div className="relative mx-auto w-full max-w-md md:max-w-lg">
           <div className="absolute -inset-4 rounded-full bg-accent/40 blur-3xl" />
           <img
-            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80"
             alt="Ocean horizon"
-            className="relative w-full aspect-[4/5] object-cover rounded-md"
+            className="relative w-full aspect-[5/4] md:aspect-[4/3] object-cover rounded-md"
             loading="lazy"
           />
         </div>
