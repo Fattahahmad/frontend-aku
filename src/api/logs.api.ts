@@ -1,5 +1,6 @@
-import apiClient from './client';
-import { ApiResponse } from '@moodmate/types/api';
+import apiClient from "./client";
+import { unwrapApiResponse } from "@moodmate/lib/api";
+import { ApiResponse } from "@moodmate/types/api";
 
 export interface SummaryData {
   user_name: string;
@@ -30,7 +31,7 @@ export interface LogDetail {
 }
 
 export interface LogDetailResponse {
-  log: LogDetail;
+  log: LogDetail | null;
 }
 
 export interface CreateLogPayload {
@@ -43,41 +44,6 @@ export interface CreateLogResponse {
   suggestion?: string;
   streak?: number;
 }
-
-export const getSummary = async () => {
-  const response = await apiClient.get<ApiResponse<SummaryData>>('/dashboard/summary');
-  return response.data;
-};
-
-export const getCalendar = async (month: number, year: number) => {
-  const response = await apiClient.get<ApiResponse<CalendarData>>(`/logs/calendar?month=${month}&year=${year}`);
-  return response.data;
-};
-
-export const getLogByDate = async (date: string) => {
-  const response = await apiClient.get<ApiResponse<LogDetailResponse>>(`/logs/date/${date}`);
-  return response.data;
-};
-
-export const createLog = async (payload: CreateLogPayload) => {
-  const response = await apiClient.post<ApiResponse<CreateLogResponse>>('/logs', payload);
-  return response.data;
-};
-
-export const updateLog = async (id: string, payload: CreateLogPayload) => {
-  const response = await apiClient.put<ApiResponse<LogDetailResponse>>(`/logs/${id}`, payload);
-  return response.data;
-};
-
-export const deleteLog = async (id: string) => {
-  const response = await apiClient.delete<ApiResponse<null>>(`/logs/${id}`);
-  return response.data;
-};
-
-export const getAllLogs = async (page: number = 1, limit: number = 10) => {
-  const response = await apiClient.get<ApiResponse<PaginatedLogsResponse>>(`/logs?page=${page}&limit=${limit}`);
-  return response.data;
-};
 
 export interface PaginatedLogsResponse {
   logs: LogDetail[];
@@ -93,10 +59,49 @@ export interface SuggestionResponse {
   suggestion: string;
 }
 
+export const getSummary = async () => {
+  const response = await apiClient.get<ApiResponse<SummaryData>>("/dashboard/summary");
+  return unwrapApiResponse(response.data);
+};
+
+export const getCalendar = async (month: number, year: number) => {
+  const response = await apiClient.get<ApiResponse<CalendarData>>("/logs/calendar", {
+    params: { month, year },
+  });
+  return unwrapApiResponse(response.data);
+};
+
+export const getLogByDate = async (date: string) => {
+  const response = await apiClient.get<ApiResponse<LogDetailResponse>>(`/logs/date/${encodeURIComponent(date)}`);
+  return unwrapApiResponse(response.data);
+};
+
+export const createLog = async (payload: CreateLogPayload) => {
+  const response = await apiClient.post<ApiResponse<CreateLogResponse>>("/logs", payload);
+  return unwrapApiResponse(response.data);
+};
+
+export const updateLog = async (id: string, payload: CreateLogPayload) => {
+  const response = await apiClient.put<ApiResponse<LogDetailResponse>>(`/logs/${encodeURIComponent(id)}`, payload);
+  return unwrapApiResponse(response.data);
+};
+
+export const deleteLog = async (id: string) => {
+  const response = await apiClient.delete<ApiResponse<null>>(`/logs/${encodeURIComponent(id)}`);
+  return unwrapApiResponse(response.data);
+};
+
+export const getAllLogs = async (page = 1, limit = 10) => {
+  const response = await apiClient.get<ApiResponse<PaginatedLogsResponse>>("/logs", {
+    params: { page, limit },
+  });
+  return unwrapApiResponse(response.data);
+};
+
 export const getSuggestion = async (moodScore: number, journalText: string) => {
-  const response = await apiClient.post<ApiResponse<SuggestionResponse>>(
-    '/logs/suggestion',
-    { mood_score: moodScore, journal_text: journalText }
-  );
-  return response.data;
+  const response = await apiClient.post<ApiResponse<SuggestionResponse>>("/logs/suggestion", {
+    mood_score: moodScore,
+    journal_text: journalText,
+  });
+  return unwrapApiResponse(response.data);
 };

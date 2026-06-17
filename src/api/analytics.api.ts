@@ -1,5 +1,6 @@
-import apiClient from './client';
-import { ApiResponse } from '@moodmate/types/api';
+import apiClient from "./client";
+import { unwrapApiResponse } from "@moodmate/lib/api";
+import { ApiResponse } from "@moodmate/types/api";
 
 export interface MoodTrendItem {
   day: string;
@@ -24,6 +25,6 @@ export interface WeeklyInsightsData {
 }
 
 export const getWeeklyInsights = async () => {
-  const response = await apiClient.get<ApiResponse<WeeklyInsightsData>>('/insights/weekly');
-  return response.data;
+  const response = await apiClient.get<ApiResponse<WeeklyInsightsData>>("/insights/weekly");
+  return unwrapApiResponse(response.data);
 };

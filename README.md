@@ -1,6 +1,6 @@
-# MoodMate
+# AKU
 
-Aplikasi pelacakan mood harian dengan wawasan AI. MoodMate membantumu memahami pola emosi melalui check-in singkat sehari-hari.
+Aplikasi pelacakan mood harian dengan wawasan AI. AKU membantumu memahami pola emosi melalui check-in singkat sehari-hari.
 
 ## Fitur Utama
 
@@ -33,7 +33,7 @@ Aplikasi pelacakan mood harian dengan wawasan AI. MoodMate membantumu memahami p
 ```bash
 # Clone repository
 git clone <repo-url>
-cd frontend-moodmate
+cd frontend-aku
 
 # Install dependencies
 npm install
@@ -56,7 +56,7 @@ npm run dev
 Buat file `.env` di root:
 
 ```env
-VITE_API_URL=https://api-moodmate.vercel.app/api/v1
+VITE_API_URL=https://api-aku.vercel.app/api/v1
 ```
 
 ## Struktur Folder

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@moodmate/components/ui/toast";
 import { Button } from "@moodmate/components/ui/button";
 import { Card, CardContent } from "@moodmate/components/ui/card";
 import {
@@ -15,6 +15,7 @@ import { useAllLogs, useDeleteLog } from "@moodmate/hooks/api/useLogs";
 import { getMood } from "@moodmate/lib/moods";
 import { format, isToday } from "date-fns";
 import { ArrowRight, CalendarDays } from "lucide-react";
+import { getApiErrorMessage } from "@moodmate/lib/api";
 
 const EmptyState = () => (
   <Card className="border-border bg-card">
@@ -35,9 +36,9 @@ const EmptyState = () => (
   </Card>
 );
 
-const Pagination = ({ currentPage, totalPages, onPageChange }: { 
-  currentPage: number; 
-  totalPages: number; 
+const Pagination = ({ currentPage, totalPages, onPageChange }: {
+  currentPage: number;
+  totalPages: number;
   onPageChange: (page: number) => void;
 }) => {
   return (
@@ -81,12 +82,12 @@ const History = () => {
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
-  
+
   const { data: logsData, isLoading, error } = useAllLogs(page, limit);
   const { mutate: deleteLog, isPending: deletePending } = useDeleteLog();
 
-  const logs = logsData?.data?.logs ?? [];
-  const pagination = logsData?.data?.pagination;
+  const logs = logsData?.logs ?? [];
+  const pagination = logsData?.pagination;
 
   const confirmDelete = (id: string) => {
     deleteLog(id, {
@@ -94,8 +95,8 @@ const History = () => {
         toast.success("Entri dihapus");
         setPendingDelete(null);
       },
-      onError: () => {
-        toast.error("Gagal menghapus entri");
+      onError: (err: unknown) => {
+        toast.error(getApiErrorMessage(err, "Gagal menghapus entri"));
       },
     });
   };
@@ -136,6 +137,7 @@ const History = () => {
               const entryDate = new Date(e.created_at);
               const dateStr = format(entryDate, "MMM d");
               const isEditable = isToday(entryDate);
+
               return (
                 <article key={e.id} className="relative">
                   <span className="absolute -left-[34px] md:-left-[42px] top-5 w-2.5 h-2.5 rounded-full bg-primary" />
@@ -181,7 +183,7 @@ const History = () => {
         </>
       )}
 
-      <Dialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
+      <Dialog open={Boolean(pendingDelete)} onOpenChange={(open) => !open && setPendingDelete(null)}>
         <DialogContent className="rounded-md">
           <DialogHeader>
             <DialogTitle className="text-2xl">Hapus entri ini?</DialogTitle>

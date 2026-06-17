@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { Leaf, Home, NotebookPen, BarChart3, Settings as SettingsIcon, BookOpen, Wind } from "lucide-react";
+import { Target, Home, NotebookPen, BarChart3, Settings as SettingsIcon, BookOpen, Wind } from "lucide-react";
 import { cn } from "@moodmate/lib/utils";
+import { BrandMark } from "@moodmate/components/BrandMark";
 
 const nav = [
   { to: "/dashboard/home", label: "Home", icon: Home },
@@ -8,6 +9,7 @@ const nav = [
   { to: "/dashboard/history", label: "History", icon: BookOpen },
   { to: "/dashboard/analytics", label: "Insights", icon: BarChart3 },
   { to: "/dashboard/breathe", label: "Breathe", icon: Wind },
+  { to: "/dashboard/habits", label: "Habits", icon: Target },
   { to: "/dashboard/settings", label: "Settings", icon: SettingsIcon },
 ];
 
@@ -19,14 +21,15 @@ const DashboardLayout = () => {
     "/dashboard/history": "Journal History",
     "/dashboard/analytics": "Weekly Insights",
     "/dashboard/breathe": "Breathe",
+    "/dashboard/habits": "Habits",
     "/dashboard/settings": "Settings",
   };
   return (
     <div className="min-h-screen bg-background flex">
       <aside className="hidden md:flex flex-col w-60 border-r border-border bg-card p-8 sticky top-0 h-screen">
         <NavLink to="/" className="flex items-center gap-2 font-semibold text-lg mb-12">
-          <Leaf className="w-5 h-5 text-primary" strokeWidth={1.75} />
-          MoodMate
+          <BrandMark size="md" />
+          AKU
         </NavLink>
         <nav className="flex flex-col gap-1">
           {nav.map((item) => (
@@ -37,7 +40,7 @@ const DashboardLayout = () => {
                 cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition",
                   isActive
-                    ? "bg-primary-soft text-primary"
+                    ? "bg-success/15 text-primary ring-1 ring-success"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )
               }
@@ -52,8 +55,8 @@ const DashboardLayout = () => {
       <div className="flex-1 flex flex-col min-w-0">
         <header className="md:hidden sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border px-6 py-4 flex items-center justify-between">
           <NavLink to="/" className="flex items-center gap-2 font-semibold">
-            <Leaf className="w-4 h-4 text-primary" strokeWidth={1.75} />
-            MoodMate
+            <BrandMark size="sm" />
+          AKU
           </NavLink>
           <span className="text-sm text-muted-foreground">{titleMap[pathname] || ""}</span>
         </header>
@@ -61,7 +64,7 @@ const DashboardLayout = () => {
           <Outlet />
         </main>
 
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border grid grid-cols-6">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border grid grid-cols-7">
           {nav.map((item) => (
             <NavLink
               key={item.to}
@@ -69,7 +72,7 @@ const DashboardLayout = () => {
               className={({ isActive }) =>
                 cn(
                   "flex flex-col items-center gap-1 py-3 text-[10px] font-medium transition",
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  isActive ? "text-success" : "text-muted-foreground"
                 )
               }
             >

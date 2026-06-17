@@ -4,11 +4,12 @@ import { Button } from "@moodmate/components/ui/button";
 import { Textarea } from "@moodmate/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@moodmate/components/ui/dialog";
 import { cn } from "@moodmate/lib/utils";
-import { toast } from "sonner";
+import { toast } from "@moodmate/components/ui/toast";
 import { Sparkles, Loader2 } from "lucide-react";
 import { moods } from "@moodmate/lib/moods";
 import { useCreateLog, useLogByDate, useUpdateLog } from "@moodmate/hooks/api/useLogs";
-import { isAxiosError } from "axios";
+import { getApiErrorMessage } from "@moodmate/lib/api";
+import { checkInSchema, getFirstZodError } from "@moodmate/lib/validations";
 
 const CheckIn = () => {
   const navigate = useNavigate();
@@ -21,62 +22,59 @@ const CheckIn = () => {
 
   const { mutate: createLog, isPending: createPending } = useCreateLog();
   const { mutate: updateLog, isPending: updatePending } = useUpdateLog();
-  const { data: editLogData, isLoading: editLoading, error: editError } = useLogByDate(editDate || "");
+  const { data: editLog, isLoading: editLoading, error: editError } = useLogByDate(editDate || "");
 
   const isPending = createPending || updatePending;
 
   useEffect(() => {
-    if (editDate && editLogData?.data?.log) {
-      setSelected(editLogData.data.log.mood_score);
-      setJournal(editLogData.data.log.journal_text);
+    if (editDate && editLog) {
+      setSelected(editLog.mood_score);
+      setJournal(editLog.journal_text);
     }
-  }, [editDate, editLogData]);
+  }, [editDate, editLog]);
 
   const save = () => {
     if (selected === null) {
       toast.error("Pilih mood terlebih dahulu.");
       return;
     }
-    
+
     const payload = {
-      mood_score: selected ?? 0,
+      mood_score: selected,
       journal_text: journal,
     };
 
+    const parsed = checkInSchema.safeParse(payload);
+
+    if (!parsed.success) {
+      toast.error(getFirstZodError(parsed.error));
+      return;
+    }
+
     if (editDate) {
-      const logId = editLogData?.data?.log?.id;
-      if (!logId) {
+      if (!editLog?.id) {
         toast.error("Tidak dapat mengupdate: entri tidak ditemukan");
         return;
       }
-      updateLog({ id: logId, payload }, {
+
+      updateLog({ id: editLog.id, payload }, {
         onSuccess: () => {
           toast.success("Entri diperbarui");
           setOpen(true);
         },
         onError: (err: unknown) => {
-          let errorMsg = "Gagal mengupdate entri";
-          if (isAxiosError(err) && err.response?.data?.message) {
-            errorMsg = err.response.data.message;
-          }
-          console.error('Update log error:', err, errorMsg);
-          toast.error(errorMsg);
+          toast.error(getApiErrorMessage(err, "Gagal mengupdate entri"));
         },
       });
     } else {
       createLog(payload, {
         onSuccess: (res) => {
-          toast.success(res.message || "Entri disimpan");
-          setSuggestion(res.data?.suggestion ?? null);
+          toast.success("Entri disimpan");
+          setSuggestion(res.suggestion ?? null);
           setOpen(true);
         },
         onError: (err: unknown) => {
-          let errorMsg = "Gagal menyimpan entri";
-          if (isAxiosError(err) && err.response?.data?.message) {
-            errorMsg = err.response.data.message;
-          }
-          console.error('Create log error:', err, errorMsg);
-          toast.error(errorMsg);
+          toast.error(getApiErrorMessage(err, "Gagal menyimpan entri"));
         },
       });
     }

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@moodmate/components/ui/button";
 import { Calendar as CalendarIcon, SmilePlus, Flame, Sparkles, ArrowRight, Wind, Loader2 } from "lucide-react";
 import { DayPicker } from "react-day-picker";
@@ -13,8 +13,11 @@ import {
 } from "@moodmate/components/ui/dialog";
 import { moods, getMood } from "@moodmate/lib/moods";
 import { useSummary, useCalendar, useLogByDate } from "@moodmate/hooks/api/useLogs";
+import { useHabitSummary } from "@moodmate/hooks/useHabits";
+import { getLast7DaysRange } from "@moodmate/lib/habits";
 import { format } from "date-fns";
 import { Card, CardContent } from "@moodmate/components/ui/card";
+import { toast } from "@moodmate/components/ui/toast";
 
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -26,14 +29,11 @@ const getGreeting = () => {
 
 type LoggedEntry = {
   moodId: number;
-  text: string;
-  tags: string[];
-  ai?: string;
 };
 
 const Home = () => {
+  const navigate = useNavigate();
   const today = new Date();
-  const [selectedEntry, setSelectedEntry] = useState<{ date: string; entry: LoggedEntry } | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [calendarMonth, setCalendarMonth] = useState(today.getMonth() + 1);
   const [calendarYear, setCalendarYear] = useState(today.getFullYear());
@@ -41,29 +41,29 @@ const Home = () => {
   const { data: summaryData, isLoading: summaryLoading, error: summaryError } = useSummary();
   const { data: calendarData, isLoading: calendarLoading } = useCalendar(calendarMonth, calendarYear);
   const { data: logDetail, isLoading: logDetailLoading } = useLogByDate(selectedDate || "");
+  const habitRange = getLast7DaysRange();
+  const { data: habitSummary } = useHabitSummary(habitRange.from, habitRange.to);
 
   const loggedDays = useMemo(() => {
     const map = new Map<string, LoggedEntry>();
-    const logs = calendarData?.data?.logs;
+    const logs = calendarData?.logs;
+
     if (Array.isArray(logs)) {
       logs.forEach((log) => {
         const date = new Date(log.log_date);
-        const entry: LoggedEntry = {
+        map.set(date.toDateString(), {
           moodId: log.mood_score,
-          text: "",
-          tags: [],
-          ai: "",
-        };
-        map.set(date.toDateString(), entry);
+        });
       });
     }
+
     return map;
   }, [calendarData]);
 
   const stats = [
-    { icon: CalendarIcon, label: "Total check-in", value: summaryLoading ? "..." : summaryData?.data?.total_checkins?.toString() ?? "0" },
-    { icon: SmilePlus, label: "Rata-rata mood", value: summaryLoading ? "..." : summaryData?.data?.average_mood_label ?? "Netral" },
-    { icon: Flame, label: "Streak saat ini", value: summaryLoading ? "..." : `${summaryData?.data?.current_streak ?? 0} hari` },
+    { icon: CalendarIcon, label: "Total check-in", value: summaryLoading ? "..." : summaryData?.total_checkins?.toString() ?? "0" },
+    { icon: SmilePlus, label: "Rata-rata mood", value: summaryLoading ? "..." : summaryData?.average_mood_label ?? "Netral" },
+    { icon: Flame, label: "Streak saat ini", value: summaryLoading ? "..." : `${summaryData?.current_streak ?? 0} hari` },
   ];
 
   if (summaryError) {
@@ -77,14 +77,24 @@ const Home = () => {
     );
   }
 
+  const handleDayClick = (date: Date) => {
+    const dateStr = format(date, "yyyy-MM-dd");
+    const hasEntry = loggedDays.has(date.toDateString());
+    setSelectedDate(dateStr);
+
+    if (!hasEntry) {
+      toast.info("Belum ada entri untuk tanggal ini.");
+    }
+  };
+
   return (
     <div className="space-y-12">
       <header>
         <p className="text-sm text-muted-foreground">{format(today, "EEEE, MMMM d")}</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mt-2">
-          {getGreeting()}, {summaryLoading ? "..." : summaryData?.data?.user_name ?? "teman"}.
+          {getGreeting()}, {summaryLoading ? "..." : summaryData?.user_name ?? "teman"}.
         </h1>
-        <p className="text-muted-foreground mt-3 text-lg">Cuplikan hening minggu ini.</p>
+        <p className="text-muted-foreground mt-3 text-lg">Ringkasan aktivitas emosimu minggu ini.</p>
       </header>
 
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border border border-border rounded-md overflow-hidden">
@@ -97,16 +107,31 @@ const Home = () => {
         ))}
       </section>
 
+      <section className="border border-border bg-card rounded-md p-6 md:p-8">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">Habit consistency</h2>
+            <p className="text-sm text-muted-foreground mt-2">
+              {habitSummary?.activeHabits ?? 0} habit aktif · {habitSummary?.completionRate ?? 0}% completion rate ·{" "}
+              {habitSummary?.bestStreak ? `${habitSummary.bestStreak.title} (${habitSummary.bestStreak.streak} hari)` : "mulai satu habit kecil"}
+            </p>
+          </div>
+          <Link to="/dashboard/habits" className="text-sm font-medium text-primary">
+            Kelola <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </section>
+
       <section className="rounded-md border border-border bg-card overflow-hidden grid md:grid-cols-2">
         <img
-          src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=80"
-          alt="Gunung di senja"
+          src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
+          alt="Blue nature landscape"
           className="w-full h-48 md:h-full object-cover"
           loading="lazy"
         />
         <div className="p-8 md:p-10 flex flex-col justify-center">
           <h2 className="text-2xl font-semibold tracking-tight">Apa perasaanmu hari ini?</h2>
-          <p className="text-muted-foreground mt-2">Sebuah jeda singkat. Cukup 30 detik.</p>
+          <p className="text-muted-foreground mt-2">Catat kondisi emosimu hari ini.</p>
           <Link to="/dashboard/checkin" className="mt-6">
             <Button>
               Mulai check-in <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.75} />
@@ -126,33 +151,31 @@ const Home = () => {
               <Loader2 className="w-8 h-8 text-primary animate-spin" strokeWidth={1.5} />
             </div>
           ) : (
-<DayPicker
-               mode="single"
-               month={new Date(calendarYear, calendarMonth - 1)}
-               onMonthChange={(newMonth) => {
-                 setCalendarMonth(newMonth.getMonth() + 1);
-                 setCalendarYear(newMonth.getFullYear());
-               }}
-               showOutsideDays
-               onDayClick={(date) => {
-                 const dateStr = format(date, "yyyy-MM-dd");
-                 setSelectedDate(dateStr);
-               }}
-               className="moodmate-calendar pointer-events-auto"
-               modifiers={loggedDays.size > 0 ? { logged: Array.from(loggedDays.keys()).map(d => new Date(d)) } : {}}
-               components={{
-                 DayContent: ({ date }) => {
-                   const entry = loggedDays.get(date.toDateString());
-                   const Icon = entry ? moods.find(m => m.id === entry.moodId)?.icon : null;
-                   return (
-                     <div className="flex flex-col items-center justify-center leading-none gap-0.5">
-                       <span>{date.getDate()}</span>
-                       {Icon && <Icon className="w-3 h-3 text-primary" strokeWidth={1.75} />}
-                     </div>
-                   );
-                 },
-               }}
-             />
+            <DayPicker
+              mode="single"
+              month={new Date(calendarYear, calendarMonth - 1)}
+              onMonthChange={(newMonth) => {
+                setCalendarMonth(newMonth.getMonth() + 1);
+                setCalendarYear(newMonth.getFullYear());
+              }}
+              showOutsideDays
+              onDayClick={handleDayClick}
+              className="aku-calendar pointer-events-auto"
+              modifiers={loggedDays.size > 0 ? { logged: Array.from(loggedDays.keys()).map((d) => new Date(d)) } : {}}
+              components={{
+                DayContent: ({ date }) => {
+                  const entry = loggedDays.get(date.toDateString());
+                  const Icon = entry ? moods.find((m) => m.id === entry.moodId)?.icon : null;
+
+                  return (
+                    <div className="flex flex-col items-center justify-center leading-none gap-0.5">
+                      <span>{date.getDate()}</span>
+                      {Icon && <Icon className="w-3 h-3 text-primary" strokeWidth={1.75} />}
+                    </div>
+                  );
+                },
+              }}
+            />
           )}
         </div>
         <Link
@@ -177,22 +200,23 @@ const Home = () => {
           <Sparkles className="w-3.5 h-3.5" strokeWidth={1.75} /> Insight terbaru
         </div>
         <p className="mt-3 text-foreground leading-relaxed">
-          {summaryLoading ? "..." : summaryData?.data?.recent_insight ?? "Lakukan check-in pertama untuk melihat insight di sini."}
+          {summaryLoading ? "..." : summaryData?.recent_insight ?? "Lakukan check-in pertama untuk melihat insight di sini."}
         </p>
       </section>
 
-      <Dialog open={!!selectedDate && !!logDetail?.data?.log} onOpenChange={(o) => { if (!o) { setSelectedDate(null); setSelectedEntry(null); } }}>
+      <Dialog open={Boolean(selectedDate)} onOpenChange={(open) => !open && setSelectedDate(null)}>
         <DialogContent className="rounded-md">
           {logDetailLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 text-primary animate-spin" strokeWidth={1.5} />
             </div>
-          ) : (
+          ) : logDetail ? (
             <>
               <DialogHeader>
-                {logDetail?.data?.log && (() => {
-                  const mood = getMood(logDetail.data.log.mood_score);
+                {(() => {
+                  const mood = getMood(logDetail.mood_score);
                   const Icon = mood?.icon;
+
                   return Icon && (
                     <div className="w-10 h-10 rounded-full bg-primary-soft text-primary flex items-center justify-center mb-3">
                       <Icon className="w-5 h-5" strokeWidth={1.75} />
@@ -200,35 +224,32 @@ const Home = () => {
                   );
                 })()}
                 <DialogTitle className="text-2xl">
-                  {logDetail?.data?.log && format(new Date(logDetail.data.log.created_at), "EEEE, MMMM d")}
+                  {format(new Date(logDetail.created_at), "EEEE, MMMM d")}
                 </DialogTitle>
                 <DialogDescription className="text-sm uppercase tracking-wide text-primary pt-1">
-                  {logDetail?.data?.log && getMood(logDetail.data.log.mood_score)?.label}
+                  {getMood(logDetail.mood_score)?.label}
                 </DialogDescription>
               </DialogHeader>
-              {logDetail?.data?.log && (
-                <div className="space-y-4">
-                  <p className="text-foreground leading-relaxed text-[15px]">{logDetail.data.log.journal_text}</p>
-                  <div className="flex items-center justify-between pt-2">
-                    <Button variant="ghost" size="sm" onClick={() => {
-                      const date = format(new Date(logDetail.data.log!.created_at), "yyyy-MM-dd");
-                      setSelectedDate(null);
-                      setSelectedEntry(null);
-                    }}>
-                      Tutup
-                    </Button>
-                    <Button size="sm" onClick={() => {
-                      const date = format(new Date(logDetail.data.log!.created_at), "yyyy-MM-dd");
-                      setSelectedDate(null);
-                      setSelectedEntry(null);
-                      window.location.href = `/dashboard/checkin?edit=${encodeURIComponent(date)}`;
-                    }}>
-                      Edit
-                    </Button>
-                  </div>
+              <div className="space-y-4">
+                <p className="text-foreground leading-relaxed text-[15px]">{logDetail.journal_text}</p>
+                <div className="flex items-center justify-between pt-2">
+                  <Button variant="ghost" size="sm" onClick={() => setSelectedDate(null)}>
+                    Tutup
+                  </Button>
+                  <Button size="sm" onClick={() => {
+                    const date = format(new Date(logDetail.created_at), "yyyy-MM-dd");
+                    setSelectedDate(null);
+                    navigate(`/dashboard/checkin?edit=${encodeURIComponent(date)}`);
+                  }}>
+                    Edit
+                  </Button>
                 </div>
-              )}
+              </div>
             </>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Belum ada entri pada tanggal ini.</p>
+            </div>
           )}
         </DialogContent>
       </Dialog>

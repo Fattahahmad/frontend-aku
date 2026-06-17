@@ -8,12 +8,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@moodmate/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { useUserProfile, useUpdateUserProfile, useLogout } from "@moodmate/hooks/api/useUser";
-import { toast } from "sonner";
-import { isAxiosError } from "axios";
+import { toast } from "@moodmate/components/ui/toast";
+import { getApiErrorMessage } from "@moodmate/lib/api";
+import { getFirstZodError, profileNameSchema } from "@moodmate/lib/validations";
+import { useTheme } from "next-themes";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const [dark, setDark] = useState(false);
+  const { theme, setTheme } = useTheme();
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [name, setName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,22 +23,20 @@ const Settings = () => {
   const { data: profileData, isLoading: profileLoading } = useUserProfile();
   const { mutate: updateProfile, isPending: updatePending } = useUpdateUserProfile();
   const { mutate: logoutApi, isPending: logoutPending } = useLogout();
+  const profile = profileData?.user;
+  const isDark = theme === "dark";
 
   const toggleDark = (v: boolean) => {
-    setDark(v);
-    document.documentElement.classList.toggle("dark", v);
+    setTheme(v ? "dark" : "light");
   };
 
   const handleLogout = () => {
     logoutApi(undefined, {
       onSuccess: () => {
-        localStorage.removeItem("access_token");
         toast.success("Berhasil keluar!");
         navigate("/login");
       },
-      onError: (error: unknown) => {
-        console.error("Logout error:", error);
-        localStorage.removeItem("access_token");
+      onError: () => {
         toast.error("Gagal keluar, tapi anda akan di-redirect.");
         setTimeout(() => navigate("/login"), 1000);
       },
@@ -44,14 +44,20 @@ const Settings = () => {
   };
 
   const handleEditProfile = () => {
-    setName(profileData?.data?.user?.name ?? "");
+    setName(profile?.name ?? "");
     setEditProfileOpen(true);
   };
 
   const handleSaveProfile = () => {
+    const parsed = profileNameSchema.safeParse({ name });
+    if (!parsed.success) {
+      toast.error(getFirstZodError(parsed.error));
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("name", name);
-    
+    formData.append("name", parsed.data.name);
+
     if (fileInputRef.current?.files?.[0]) {
       formData.append("avatar", fileInputRef.current.files[0]);
     }
@@ -62,11 +68,7 @@ const Settings = () => {
         setEditProfileOpen(false);
       },
       onError: (err: unknown) => {
-        let errorMsg = "Gagal memperbarui profil";
-        if (isAxiosError(err) && err.response?.data?.message) {
-          errorMsg = err.response.data.message;
-        }
-        toast.error(errorMsg);
+        toast.error(getApiErrorMessage(err, "Gagal memperbarui profil"));
       },
     });
   };
@@ -75,18 +77,20 @@ const Settings = () => {
     <div className="space-y-10">
       <header>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Pengaturan</h1>
-        <p className="text-muted-foreground mt-3 text-lg">Personalisasi MoodMate milikmu.</p>
+        <p className="text-muted-foreground mt-3 text-lg">Personalisasi AKU milikmu.</p>
       </header>
 
       <section className="flex items-center gap-4 pb-8 border-b border-border">
-        <img
-          src={profileData?.data?.user?.avatar_url ?? "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"}
-          alt="Profil"
-          className="w-14 h-14 rounded-full object-cover"
-        />
+        <div className="w-14 h-14 rounded-full bg-accent flex items-center justify-center">
+          <img
+            src={profile?.avatar_url ?? "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"}
+            alt="Profil"
+            className="w-full h-full rounded-full object-cover"
+          />
+        </div>
         <div>
-          <p className="font-medium">{profileLoading ? "..." : profileData?.data?.user?.name ?? "Pengguna"}</p>
-          <p className="text-sm text-muted-foreground">{profileData?.data?.user?.email ?? ""}</p>
+          <p className="font-medium">{profileLoading ? "..." : profile?.name ?? "Pengguna"}</p>
+          <p className="text-sm text-muted-foreground">{profile?.email ?? ""}</p>
         </div>
       </section>
 
@@ -109,9 +113,9 @@ const Settings = () => {
         <div className="flex items-center justify-between py-5">
           <div>
             <Label htmlFor="dark" className="font-medium">Mode gelap</Label>
-            <p className="text-sm text-muted-foreground mt-1">Lebih mudah dilihat di malam hari.</p>
+            <p className="text-sm text-muted-foreground mt-1">Preferensi tersimpan untuk sesi berikutnya.</p>
           </div>
-          <Switch id="dark" checked={dark} onCheckedChange={toggleDark} />
+          <Switch id="dark" checked={isDark} onCheckedChange={toggleDark} />
         </div>
       </section>
 

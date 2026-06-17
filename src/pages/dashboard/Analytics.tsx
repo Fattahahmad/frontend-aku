@@ -1,21 +1,17 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 import { Sparkles, BarChart3, ArrowRight } from "lucide-react";
-import { useQuery } from '@tanstack/react-query';
-import { getWeeklyInsights } from '@moodmate/api/analytics.api';
+import { useWeeklyInsights } from "@moodmate/hooks/api/useAnalytics";
 import { Card, CardContent } from "@moodmate/components/ui/card";
 import { Button } from "@moodmate/components/ui/button";
 import { Link } from "react-router-dom";
 
 const Analytics = () => {
-  const { data: insightsData, isLoading, error } = useQuery({
-    queryKey: ['dashboard', 'insights', 'weekly'],
-    queryFn: () => getWeeklyInsights(),
-  });
+  const { data: insightsData, isLoading, error } = useWeeklyInsights();
 
-  const moodTrend = insightsData?.data?.mood_trend ?? [];
-  const emotionDistribution = insightsData?.data?.emotion_distribution ?? [];
-  const summary = insightsData?.data?.summary;
-  const hasData = moodTrend.length > 0 || emotionDistribution.length > 0;
+  const moodTrend = insightsData?.mood_trend ?? [];
+  const emotionDistribution = insightsData?.emotion_distribution ?? [];
+  const summary = insightsData?.summary;
+  const hasData = moodTrend.length > 0 && emotionDistribution.length > 0;
 
   const EmptyState = () => (
     <Card className="border-border bg-card">
@@ -64,11 +60,11 @@ const Analytics = () => {
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={moodTrend} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="2 4" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis domain={[1, 5]} stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={{ borderRadius: 6, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: 12 }} />
-                  <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={1.75} dot={{ r: 3, fill: "hsl(var(--primary))" }} />
+                  <CartesianGrid strokeDasharray="2 4" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="day" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis domain={[0, 5]} stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={{ borderRadius: 6, border: "1px solid var(--border)", background: "var(--card)", fontSize: 12 }} />
+                  <Line type="monotone" dataKey="score" stroke="var(--primary)" strokeWidth={1.75} dot={{ r: 3, fill: "var(--primary)" }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -79,12 +75,12 @@ const Analytics = () => {
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={emotionDistribution} layout="vertical" margin={{ left: 0, right: 8 }}>
-                  <CartesianGrid strokeDasharray="2 4" stroke="hsl(var(--border))" horizontal={false} />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis dataKey="emotion" type="category" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} width={80} />
-                  <Tooltip contentStyle={{ borderRadius: 6, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", fontSize: 12 }} />
+                  <CartesianGrid strokeDasharray="2 4" stroke="var(--border)" horizontal={false} />
+                  <XAxis type="number" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis dataKey="emotion" type="category" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} width={80} />
+                  <Tooltip contentStyle={{ borderRadius: 6, border: "1px solid var(--border)", background: "var(--card)", fontSize: 12 }} />
                   <Bar dataKey="count" radius={[0, 2, 2, 0]} barSize={16}>
-                    {emotionDistribution.map((_, i) => <Cell key={i} fill="hsl(var(--primary))" fillOpacity={1 - i * 0.18} />)}
+                    {emotionDistribution.map((_, i) => <Cell key={i} fill="var(--primary)" fillOpacity={1 - i * 0.18} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

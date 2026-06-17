@@ -18,11 +18,11 @@ const Breathe = () => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Reset state when route changes or component unmounts
   useEffect(() => {
     return () => {
       setRunning(false);
       setPhaseIdx(0);
+
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
@@ -43,7 +43,15 @@ const Breathe = () => {
 
     const currentPhase = PHASES[phaseIdx];
     timeoutRef.current = setTimeout(() => {
-      setPhaseIdx((i) => (i + 1) % PHASES.length);
+      setPhaseIdx((current) => {
+        const nextPhase = current + 1;
+
+        if (nextPhase >= PHASES.length) {
+          return 0;
+        }
+
+        return nextPhase;
+      });
     }, currentPhase.duration);
 
     return () => {
@@ -57,7 +65,7 @@ const Breathe = () => {
     if (audioRef.current) {
       if (running) {
         audioRef.current.play().catch((err) => {
-          console.warn('Audio play failed:', err);
+          console.warn("Audio play failed:", err);
         });
       } else {
         audioRef.current.pause();
@@ -77,7 +85,7 @@ const Breathe = () => {
     <div className="space-y-10">
       <header>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Latihan pernapasan</h1>
-        <p className="text-muted-foreground mt-3 text-lg">Ikuti lingkaran. Lentulkan bahu.</p>
+        <p className="text-muted-foreground mt-3 text-lg">Ikuti lingkaran. Lenturkan bahu.</p>
       </header>
 
       <section className="border border-border rounded-md bg-card p-10 md:p-16 flex flex-col items-center gap-10">
@@ -96,6 +104,7 @@ const Breathe = () => {
             {running ? phase.label : "Siap"}
           </span>
         </div>
+
         <Button
           variant="outline"
           onClick={handleToggle}
@@ -114,7 +123,7 @@ const Breathe = () => {
         </div>
 
         <p className="text-sm text-muted-foreground text-center max-w-sm">
-          Empat detik tarik. Dua detik tahan. Enam detik hembuskan. Ulangi untuk satu menit.
+          Empat detik tarik. Dua detik tahan. Enam detik hembuskan. Ulangi sesuai kebutuhan.
         </p>
       </section>
     </div>

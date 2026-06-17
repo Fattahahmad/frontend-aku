@@ -2,7 +2,7 @@ import * as React from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
 import { cn } from "@moodmate/lib/utils";
-import { buttonVariants } from "@moodmate/components/ui/button";
+import { buttonVariants } from "@moodmate/components/ui/button-variants";
 
 const AlertDialog = AlertDialogPrimitive.Root;
 

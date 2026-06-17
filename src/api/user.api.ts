@@ -1,5 +1,6 @@
-import apiClient from './client';
-import { ApiResponse } from '@moodmate/types/api';
+import apiClient from "./client";
+import { unwrapApiResponse } from "@moodmate/lib/api";
+import { ApiResponse } from "@moodmate/types/api";
 
 export interface UserData {
   id: string;
@@ -17,16 +18,16 @@ export interface UserProfileResponse {
 }
 
 export const getUserProfile = async () => {
-  const response = await apiClient.get<ApiResponse<UserProfileResponse>>('/users/me');
-  return response.data;
+  const response = await apiClient.get<ApiResponse<UserProfileResponse>>("/users/me");
+  return unwrapApiResponse(response.data);
 };
 
 export const updateUserProfile = async (formData: FormData) => {
-  const response = await apiClient.put<ApiResponse<UserProfileResponse>>('/users/me', formData);
-  return response.data;
+  const response = await apiClient.put<ApiResponse<UserProfileResponse>>("/users/me", formData);
+  return unwrapApiResponse(response.data);
 };
 
 export const logoutUser = async () => {
-  const response = await apiClient.post<ApiResponse<null>>('/users/logout');
-  return response.data;
+  const response = await apiClient.post<ApiResponse<null>>("/users/logout");
+  return unwrapApiResponse(response.data);
 };
