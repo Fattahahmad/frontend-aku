@@ -17,12 +17,23 @@ const DashboardLayout = lazy(() => import("./pages/dashboard/DashboardLayout"));
 const DashboardHome = lazy(() => import("./pages/dashboard/Home"));
 const CheckIn = lazy(() => import("./pages/dashboard/CheckIn"));
 const Analytics = lazy(() => import("./pages/dashboard/Analytics"));
+import ErrorBoundary from "./components/ErrorBoundary";
+
 const Settings = lazy(() => import("./pages/dashboard/Settings"));
 const History = lazy(() => import("./pages/dashboard/History"));
 const Breathe = lazy(() => import("./pages/dashboard/Breathe"));
 const Habits = lazy(() => import("./pages/dashboard/Habits"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+      staleTime: 1000 * 60 * 2, // 2 menit
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const RouteFallback = () => (
   <div className="flex h-screen items-center justify-center bg-background">
@@ -36,13 +47,14 @@ const App = () => (
       <AuthProvider>
         <TooltipProvider>
           <Sonner />
-          <BrowserRouter>
-            <Suspense fallback={<RouteFallback />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
+          <ErrorBoundary>
+            <BrowserRouter>
+              <Suspense fallback={<RouteFallback />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
 
-                <Route element={<PublicRoute />}>
-                  <Route path="/login" element={<Login />} />
+                  <Route element={<PublicRoute />}>
+                    <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                 </Route>
 
@@ -62,6 +74,7 @@ const App = () => (
               </Routes>
             </Suspense>
           </BrowserRouter>
+        </ErrorBoundary>
         </TooltipProvider>
       </AuthProvider>
     </ThemeProvider>

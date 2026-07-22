@@ -5,12 +5,16 @@ import { ApiResponse } from "@moodmate/types/api";
 export interface MoodTrendItem {
   day: string;
   date: string;
-  score: number;
+  emotion: string;
+  intensity: number;
 }
 
-export interface EmotionDistributionItem {
+export interface FidAggregateItem {
   emotion: string;
-  count: number;
+  emotionId: string;
+  frequency: number;
+  avgIntensity: string;
+  persistence: number;
 }
 
 export interface SummaryData {
@@ -19,9 +23,15 @@ export interface SummaryData {
 }
 
 export interface WeeklyInsightsData {
+  week_number?: string;
+  week_range?: {
+    from: string;
+    to: string;
+  };
   mood_trend: MoodTrendItem[];
-  emotion_distribution: EmotionDistributionItem[];
+  fid_aggregates?: FidAggregateItem[];
   summary: SummaryData;
+  mood_state?: "Sangat Baik" | "Baik" | "Cukup" | "Perlu Perhatian" | "Sangat Perlu Perhatian" | string;
 }
 
 export const getWeeklyInsights = async () => {

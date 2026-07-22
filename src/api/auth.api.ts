@@ -11,6 +11,7 @@ export interface RegisterPayload {
 
 export interface RegisterResponse {
   user: User;
+  token?: string;
 }
 
 export interface LoginPayload {

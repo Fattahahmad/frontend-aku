@@ -27,7 +27,17 @@ export const profileNameSchema = z.object({
 });
 
 export const checkInSchema = z.object({
-  mood_score: z.number().int().min(0).max(5),
+  emotion: z.enum([
+    "Joy",
+    "Trust",
+    "Fear",
+    "Surprise",
+    "Sadness",
+    "Disgust",
+    "Anger",
+    "Anticipation",
+  ]),
+  intensity: z.number().int().min(1, "Intensitas minimal 1").max(10, "Intensitas maksimal 10"),
   journal_text: z.string().trim().max(2000, "Jurnal maksimal 2000 karakter"),
 });
 

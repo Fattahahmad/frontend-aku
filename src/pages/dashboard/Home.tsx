@@ -11,12 +11,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@moodmate/components/ui/dialog";
-import { moods, getMood } from "@moodmate/lib/moods";
-import { useSummary, useCalendar, useLogByDate } from "@moodmate/hooks/api/useLogs";
+import { moods, getMoodByEmotion } from "@moodmate/lib/moods";
+import { useSummary, useCalendar, useLogByDate, useTodayLog } from "@moodmate/hooks/api/useLogs";
 import { useHabitSummary } from "@moodmate/hooks/useHabits";
 import { getLast7DaysRange } from "@moodmate/lib/habits";
 import { format } from "date-fns";
-import { Card, CardContent } from "@moodmate/components/ui/card";
 import { toast } from "@moodmate/components/ui/toast";
 
 const getGreeting = () => {
@@ -28,7 +27,8 @@ const getGreeting = () => {
 };
 
 type LoggedEntry = {
-  moodId: number;
+  emotion: string;
+  intensity: number;
 };
 
 const Home = () => {
@@ -39,6 +39,7 @@ const Home = () => {
   const [calendarYear, setCalendarYear] = useState(today.getFullYear());
 
   const { data: summaryData, isLoading: summaryLoading, error: summaryError } = useSummary();
+  const { data: todayLog, isLoading: todayLoading } = useTodayLog();
   const { data: calendarData, isLoading: calendarLoading } = useCalendar(calendarMonth, calendarYear);
   const { data: logDetail, isLoading: logDetailLoading } = useLogByDate(selectedDate || "");
   const habitRange = getLast7DaysRange();
@@ -52,7 +53,8 @@ const Home = () => {
       logs.forEach((log) => {
         const date = new Date(log.log_date);
         map.set(date.toDateString(), {
-          moodId: log.mood_score,
+          emotion: log.emotion,
+          intensity: log.intensity,
         });
       });
     }
@@ -61,9 +63,21 @@ const Home = () => {
   }, [calendarData]);
 
   const stats = [
-    { icon: CalendarIcon, label: "Total check-in", value: summaryLoading ? "..." : summaryData?.total_checkins?.toString() ?? "0" },
-    { icon: SmilePlus, label: "Rata-rata mood", value: summaryLoading ? "..." : summaryData?.average_mood_label ?? "Netral" },
-    { icon: Flame, label: "Streak saat ini", value: summaryLoading ? "..." : `${summaryData?.current_streak ?? 0} hari` },
+    {
+      icon: CalendarIcon,
+      label: "Total Check-in",
+      value: summaryLoading ? "..." : summaryData?.total_checkins?.toString() ?? "0",
+    },
+    {
+      icon: SmilePlus,
+      label: "Rata-rata Intensitas",
+      value: summaryLoading ? "..." : summaryData?.average_intensity ? `${summaryData.average_intensity} / 10` : "0.0 / 10",
+    },
+    {
+      icon: Flame,
+      label: "Status Hari Ini",
+      value: todayLoading ? "..." : todayLog?.has_checked_in ? "Sudah Check-In" : "Belum Check-In",
+    },
   ];
 
   if (summaryError) {
@@ -90,11 +104,11 @@ const Home = () => {
   return (
     <div className="space-y-12">
       <header>
-        <p className="text-sm text-muted-foreground">{format(today, "EEEE, MMMM d")}</p>
+        <p className="text-sm text-muted-foreground">{format(today, "EEEE, MMMM d, yyyy")}</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mt-2">
-          {getGreeting()}, {summaryLoading ? "..." : summaryData?.user_name ?? "teman"}.
+          {getGreeting()}, {summaryLoading ? "..." : summaryData?.user_name ?? "Teman"}.
         </h1>
-        <p className="text-muted-foreground mt-3 text-lg">Ringkasan aktivitas emosimu minggu ini.</p>
+        <p className="text-muted-foreground mt-3 text-lg">Ringkasan aktivitas dan kondisi emosionalmu hari ini.</p>
       </header>
 
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border border border-border rounded-md overflow-hidden">
@@ -110,7 +124,7 @@ const Home = () => {
       <section className="border border-border bg-card rounded-md p-6 md:p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold tracking-tight">Habit consistency</h2>
+            <h2 className="text-lg font-semibold tracking-tight">Habit Consistency</h2>
             <p className="text-sm text-muted-foreground mt-2">
               {habitSummary?.activeHabits ?? 0} habit aktif · {habitSummary?.completionRate ?? 0}% completion rate ·{" "}
               {habitSummary?.bestStreak ? `${habitSummary.bestStreak.title} (${habitSummary.bestStreak.streak} hari)` : "mulai satu habit kecil"}
@@ -125,16 +139,21 @@ const Home = () => {
       <section className="rounded-md border border-border bg-card overflow-hidden grid md:grid-cols-2">
         <img
           src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
-          alt="Blue nature landscape"
+          alt="Nature landscape"
           className="w-full h-48 md:h-full object-cover"
           loading="lazy"
         />
         <div className="p-8 md:p-10 flex flex-col justify-center">
           <h2 className="text-2xl font-semibold tracking-tight">Apa perasaanmu hari ini?</h2>
-          <p className="text-muted-foreground mt-2">Catat kondisi emosimu hari ini.</p>
+          <p className="text-muted-foreground mt-2">
+            {todayLog?.has_checked_in
+              ? "Kamu sudah melakukan check-in hari ini. Kamu bisa melihat atau mengedit entrinya."
+              : "Jeda sejenak untuk mengenali dan mencatat emosi yang kamu rasakan hari ini."}
+          </p>
           <Link to="/dashboard/checkin" className="mt-6">
             <Button>
-              Mulai check-in <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.75} />
+              {todayLog?.has_checked_in ? "Lihat / Edit Check-in Hari Ini" : "Mulai Check-in Harian"}{" "}
+              <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.75} />
             </Button>
           </Link>
         </div>
@@ -143,8 +162,8 @@ const Home = () => {
       <section className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 border border-border bg-card rounded-md p-6 md:p-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Kalender mood</h2>
-            <span className="text-xs text-muted-foreground">Tap hari untuk melihat entri</span>
+            <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Kalender Mood</h2>
+            <span className="text-xs text-muted-foreground">Pilih hari untuk melihat entri</span>
           </div>
           {calendarLoading ? (
             <div className="flex items-center justify-center h-64">
@@ -165,7 +184,8 @@ const Home = () => {
               components={{
                 DayContent: ({ date }) => {
                   const entry = loggedDays.get(date.toDateString());
-                  const Icon = entry ? moods.find((m) => m.id === entry.moodId)?.icon : null;
+                  const mood = entry ? getMoodByEmotion(entry.emotion) : null;
+                  const Icon = mood?.icon;
 
                   return (
                     <div className="flex flex-col items-center justify-center leading-none gap-0.5">
@@ -197,10 +217,10 @@ const Home = () => {
 
       <section className="border-l-2 border-primary pl-6">
         <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-          <Sparkles className="w-3.5 h-3.5" strokeWidth={1.75} /> Insight terbaru
+          <Sparkles className="w-3.5 h-3.5" strokeWidth={1.75} /> AI Insight Terbaru
         </div>
         <p className="mt-3 text-foreground leading-relaxed">
-          {summaryLoading ? "..." : summaryData?.recent_insight ?? "Lakukan check-in pertama untuk melihat insight di sini."}
+          {summaryLoading ? "..." : summaryData?.ai_insight ?? "Lakukan check-in harian secara konsisten untuk menerima analisis insight."}
         </p>
       </section>
 
@@ -214,33 +234,40 @@ const Home = () => {
             <>
               <DialogHeader>
                 {(() => {
-                  const mood = getMood(logDetail.mood_score);
+                  const mood = getMoodByEmotion(logDetail.emotion);
                   const Icon = mood?.icon;
 
-                  return Icon && (
-                    <div className="w-10 h-10 rounded-full bg-primary-soft text-primary flex items-center justify-center mb-3">
-                      <Icon className="w-5 h-5" strokeWidth={1.75} />
-                    </div>
+                  return (
+                    Icon && (
+                      <div className="w-10 h-10 rounded-full bg-primary-soft text-primary flex items-center justify-center mb-3">
+                        <Icon className="w-5 h-5" strokeWidth={1.75} />
+                      </div>
+                    )
                   );
                 })()}
                 <DialogTitle className="text-2xl">
-                  {format(new Date(logDetail.created_at), "EEEE, MMMM d")}
+                  {format(new Date(logDetail.created_at), "EEEE, MMMM d, yyyy")}
                 </DialogTitle>
                 <DialogDescription className="text-sm uppercase tracking-wide text-primary pt-1">
-                  {getMood(logDetail.mood_score)?.label}
+                  {getMoodByEmotion(logDetail.emotion)?.labelIndonesian} (Intensitas: {logDetail.intensity}/10)
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
-                <p className="text-foreground leading-relaxed text-[15px]">{logDetail.journal_text}</p>
+                <p className="text-foreground leading-relaxed text-[15px]">
+                  {logDetail.journal_text || "Tidak ada catatan jurnal."}
+                </p>
                 <div className="flex items-center justify-between pt-2">
                   <Button variant="ghost" size="sm" onClick={() => setSelectedDate(null)}>
                     Tutup
                   </Button>
-                  <Button size="sm" onClick={() => {
-                    const date = format(new Date(logDetail.created_at), "yyyy-MM-dd");
-                    setSelectedDate(null);
-                    navigate(`/dashboard/checkin?edit=${encodeURIComponent(date)}`);
-                  }}>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      const date = format(new Date(logDetail.created_at), "yyyy-MM-dd");
+                      setSelectedDate(null);
+                      navigate(`/dashboard/checkin?edit=${encodeURIComponent(date)}`);
+                    }}
+                  >
                     Edit
                   </Button>
                 </div>

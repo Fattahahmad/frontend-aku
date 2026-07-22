@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { getAccessToken, isAuthenticated } from "./auth";
+import { isAuthenticated } from "./auth";
 import { AuthContext } from "./AuthContext";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -10,8 +10,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const syncAuthState = () => {
+      const authed = isAuthenticated();
       setAuthState({
-        isAuthenticated: isAuthenticated(),
+        isAuthenticated: authed,
         isLoading: false,
       });
     };

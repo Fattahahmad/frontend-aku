@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Pencil, Trash2, ChevronLeft, ChevronRight, ArrowRight, CalendarDays } from "lucide-react";
 import { toast } from "@moodmate/components/ui/toast";
 import { Button } from "@moodmate/components/ui/button";
 import { Card, CardContent } from "@moodmate/components/ui/card";
@@ -12,9 +12,8 @@ import {
   DialogDescription,
 } from "@moodmate/components/ui/dialog";
 import { useAllLogs, useDeleteLog } from "@moodmate/hooks/api/useLogs";
-import { getMood } from "@moodmate/lib/moods";
+import { getMoodByEmotion } from "@moodmate/lib/moods";
 import { format, isToday } from "date-fns";
-import { ArrowRight, CalendarDays } from "lucide-react";
 import { getApiErrorMessage } from "@moodmate/lib/api";
 
 const EmptyState = () => (
@@ -29,7 +28,7 @@ const EmptyState = () => (
       </p>
       <Link to="/dashboard/checkin" className="mt-6">
         <Button>
-          Mulai check-in <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.75} />
+          Mulai Check-in <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.75} />
         </Button>
       </Link>
     </CardContent>
@@ -110,8 +109,8 @@ const History = () => {
   return (
     <div className="space-y-10">
       <header>
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Riwayat jurnal</h1>
-        <p className="text-muted-foreground mt-3 text-lg">Catatan hening hari-harimu.</p>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Riwayat Jurnal</h1>
+        <p className="text-muted-foreground mt-3 text-lg">Catatan emosi dan refleksi harianmu.</p>
       </header>
 
       {isLoading ? (
@@ -132,10 +131,10 @@ const History = () => {
         <>
           <section className="border-l border-border pl-6 md:pl-8 space-y-6">
             {logs.map((e) => {
-              const mood = getMood(e.mood_score);
+              const mood = getMoodByEmotion(e.emotion);
               const Icon = mood.icon;
               const entryDate = new Date(e.created_at);
-              const dateStr = format(entryDate, "MMM d");
+              const dateStr = format(entryDate, "MMM d, yyyy");
               const isEditable = isToday(entryDate);
 
               return (
@@ -144,12 +143,17 @@ const History = () => {
                   <div className="border border-border bg-card rounded-md p-5 md:p-6">
                     <div className="flex items-center justify-between mb-3 gap-3">
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">{dateStr}</p>
-                      <div className="flex items-center gap-2 text-primary">
+                      <div className="flex items-center gap-2 text-primary font-medium text-xs sm:text-sm">
                         <Icon className="w-4 h-4" strokeWidth={1.75} />
-                        <span className="text-xs font-medium">{mood.label}</span>
+                        <span>{mood.labelIndonesian}</span>
+                        <span className="bg-primary-soft text-primary px-2 py-0.5 rounded text-[11px] font-mono">
+                          {e.intensity}/10
+                        </span>
                       </div>
                     </div>
-                    <p className="text-foreground leading-relaxed text-[15px]">{e.journal_text}</p>
+                    <p className="text-foreground leading-relaxed text-[15px]">
+                      {e.journal_text || "Tidak ada catatan jurnal."}
+                    </p>
                     {isEditable && (
                       <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-border">
                         <Link

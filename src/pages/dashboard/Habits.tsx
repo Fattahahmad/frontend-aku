@@ -56,8 +56,10 @@ const Habits = () => {
   const { data: summary, isLoading: summaryLoading } = useHabitSummary(habitRange.from, habitRange.to);
   const { data: habitInsights = [], isLoading: insightsLoading } = useHabitInsights(habitRange.from, habitRange.to);
   const { mutate: createHabit, isPending: createPending } = useCreateHabit();
-  const { mutate: completeHabit, isPending: completePending } = useCompleteHabit();
-  const { mutate: deleteCompletion, isPending: deleteCompletionPending } = useDeleteCompletion();
+  const completeMutation = useCompleteHabit();
+  const deleteCompletionMutation = useDeleteCompletion();
+  const { mutate: completeHabit } = completeMutation;
+  const { mutate: deleteCompletion } = deleteCompletionMutation;
   const { mutate: deleteHabit } = useDeleteHabit();
 
   const chartData = getLast7DaysWithCounts(summary);
@@ -203,7 +205,9 @@ const Habits = () => {
                 const insight = insightsByHabit.get(habit.id);
                 const streak = insight?.streak ?? 0;
                 const completedToday = streak > 0;
-                const pending = completePending || deleteCompletionPending;
+                const isCompletingThis = completeMutation.isPending && completeMutation.variables?.habitId === habit.id;
+                const isDeletingThis = deleteCompletionMutation.isPending && deleteCompletionMutation.variables?.habitId === habit.id;
+                const pending = isCompletingThis || isDeletingThis;
 
                 return (
                   <Card key={habit.id} className="border-border bg-card">

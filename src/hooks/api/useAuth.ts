@@ -14,5 +14,10 @@ export const useLoginMutation = () => {
 export const useRegisterMutation = () => {
   return useMutation({
     mutationFn: (payload: RegisterPayload) => registerFn(payload),
+    onSuccess: (data) => {
+      if (data?.token) {
+        setAccessToken(data.token);
+      }
+    },
   });
 };

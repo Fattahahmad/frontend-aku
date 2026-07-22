@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import {
   getSummary,
+  getTodayLog,
   getCalendar,
   getLogByDate,
   createLog,
@@ -21,6 +22,13 @@ export const useSummary = () => {
   return useQuery({
     queryKey: ["dashboard", "summary"],
     queryFn: () => getSummary(),
+  });
+};
+
+export const useTodayLog = () => {
+  return useQuery({
+    queryKey: ["logs", "today"],
+    queryFn: () => getTodayLog(),
   });
 };
 
@@ -82,8 +90,8 @@ export const useAllLogs = (page = 1, limit = 10) => {
 
 export const useSuggestion = () => {
   return useMutation({
-    mutationFn: ({ moodScore, journalText }: { moodScore: number; journalText: string }) =>
-      getSuggestion(moodScore, journalText),
+    mutationFn: ({ emotion, intensity, journalText }: { emotion: string; intensity: number; journalText: string }) =>
+      getSuggestion(emotion, intensity, journalText),
   });
 };
 

@@ -43,8 +43,8 @@ const Register = () => {
       },
       {
         onSuccess: () => {
-          toast.success("Registration successful! You can now log in.");
-          navigate("/login");
+          toast.success("Pendaftaran berhasil! Selamat datang.");
+          navigate("/dashboard/home");
         },
         onError: (err: unknown) => {
           toast.error(getApiErrorMessage(err, "Registration failed. Please try again."));
