@@ -136,27 +136,29 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="rounded-md border border-border bg-card overflow-hidden grid md:grid-cols-2">
-        <img
-          src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
-          alt="Nature landscape"
-          className="w-full h-48 md:h-full object-cover"
-          loading="lazy"
-        />
-        <div className="p-8 md:p-10 flex flex-col justify-center">
-          <h2 className="text-2xl font-semibold tracking-tight">Apa perasaanmu hari ini?</h2>
-          <p className="text-muted-foreground mt-2">
-            {todayLog?.has_checked_in
-              ? "Kamu sudah melakukan check-in hari ini. Kamu bisa melihat atau mengedit entrinya."
-              : "Jeda sejenak untuk mengenali dan mencatat emosi yang kamu rasakan hari ini."}
-          </p>
-          <Link to="/dashboard/checkin" className="mt-6">
-            <Button>
-              {todayLog?.has_checked_in ? "Lihat / Edit Check-in Hari Ini" : "Mulai Check-in Harian"}{" "}
-              <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.75} />
-            </Button>
-          </Link>
+      <section className="rounded-lg border border-border bg-card overflow-hidden flex flex-col md:flex-row items-center justify-between p-5 md:p-6 gap-6 shadow-sm">
+        <div className="flex items-center gap-5 w-full md:w-auto">
+          <img
+            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=80"
+            alt="Nature landscape"
+            className="w-24 h-24 sm:w-28 sm:h-28 rounded-md object-cover shrink-0"
+            loading="lazy"
+          />
+          <div>
+            <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Apa perasaanmu hari ini?</h2>
+            <p className="text-sm text-muted-foreground mt-1 max-w-md">
+              {todayLog?.has_checked_in
+                ? "Kamu sudah melakukan check-in hari ini. Kamu bisa melihat atau mengedit entrinya."
+                : "Jeda sejenak untuk mengenali dan mencatat emosi yang kamu rasakan hari ini."}
+            </p>
+          </div>
         </div>
+        <Link to="/dashboard/checkin" className="shrink-0 w-full md:w-auto">
+          <Button className="w-full md:w-auto h-11 px-6">
+            {todayLog?.has_checked_in ? "Lihat / Edit Check-in Hari Ini" : "Mulai Check-in Harian"}{" "}
+            <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.75} />
+          </Button>
+        </Link>
       </section>
 
       <section className="grid md:grid-cols-3 gap-6">
