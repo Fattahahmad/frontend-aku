@@ -40,17 +40,25 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
+      const isChunkError =
+        this.state.error?.message?.includes("Failed to fetch dynamically imported module") ||
+        this.state.error?.message?.includes("Importing a module script failed");
+
       return (
         <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground">
           <div className="max-w-md w-full border border-border bg-card rounded-lg p-6 sm:p-8 text-center space-y-6 shadow-sm">
-            <div className="w-12 h-12 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" strokeWidth={1.75} />
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-semibold tracking-tight">Terjadi kesalahan sistem</h2>
+              <h2 className="text-xl font-semibold tracking-tight">
+                {isChunkError ? "Pembaruan Versi Aplikasi" : "Terjadi kesalahan sistem"}
+              </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Tampilan mengalami kendala saat memuat data. Jangan khawatir, Anda dapat mencoba memuat ulang.
+                {isChunkError
+                  ? "Aplikasi telah diperbarui ke versi terbaru di server. Muat ulang halaman untuk memperbarui tampilan."
+                  : "Tampilan mengalami kendala saat memuat data. Jangan khawatir, Anda dapat mencoba memuat ulang."}
               </p>
             </div>
 
