@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@moodmate/components/ui/button";
-import { Play, Pause, Volume2 } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { ambientSynth } from "@moodmate/lib/ambientSound";
 
 const PHASES = [
   { label: "Tarik napas", duration: 4000 },
@@ -9,34 +10,20 @@ const PHASES = [
   { label: "Hembuskan", duration: 6000 },
 ] as const;
 
-const CALM_MUSIC_URL = "https://urbamgipmfpmasxxlani.supabase.co/storage/v1/object/public/assets/music/calm-ambient.mp3";
-
 const Breathe = () => {
   const location = useLocation();
   const [running, setRunning] = useState(false);
   const [phaseIdx, setPhaseIdx] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     return () => {
       setRunning(false);
       setPhaseIdx(0);
-
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
+      ambientSynth.stop();
     };
   }, [location.pathname]);
-
-  useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio(CALM_MUSIC_URL);
-      audioRef.current.loop = true;
-      audioRef.current.volume = 0.3;
-    }
-  }, []);
 
   useEffect(() => {
     if (!running) return;
@@ -45,11 +32,9 @@ const Breathe = () => {
     timeoutRef.current = setTimeout(() => {
       setPhaseIdx((current) => {
         const nextPhase = current + 1;
-
         if (nextPhase >= PHASES.length) {
           return 0;
         }
-
         return nextPhase;
       });
     }, currentPhase.duration);
@@ -62,23 +47,23 @@ const Breathe = () => {
   }, [phaseIdx, running]);
 
   useEffect(() => {
-    if (audioRef.current) {
-      if (running) {
-        audioRef.current.play().catch((err) => {
-          console.warn("Audio play failed:", err);
-        });
-      } else {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
+    if (running && !isMuted) {
+      ambientSynth.start();
+    } else {
+      ambientSynth.stop();
     }
-  }, [running]);
+  }, [running, isMuted]);
 
   const phase = PHASES[phaseIdx];
   const scale = phase.label === "Tarik napas" ? 1 : phase.label === "Tahan" ? 1 : 0.55;
 
   const handleToggle = () => {
     setRunning((prev) => !prev);
+  };
+
+  const handleMuteToggle = () => {
+    const nextMuted = ambientSynth.toggleMute();
+    setIsMuted(nextMuted);
   };
 
   return (
@@ -105,21 +90,41 @@ const Breathe = () => {
           </span>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={handleToggle}
-          className="h-11 px-6"
-        >
-          {running ? (
-            <><Pause className="w-4 h-4 mr-2" strokeWidth={1.75} /> Jeda</>
-          ) : (
-            <><Play className="w-4 h-4 mr-2" strokeWidth={1.75} /> Mulai</>
-          )}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={handleToggle}
+            className="h-11 px-6 font-medium"
+          >
+            {running ? (
+              <><Pause className="w-4 h-4 mr-2" strokeWidth={1.75} /> Jeda</>
+            ) : (
+              <><Play className="w-4 h-4 mr-2" strokeWidth={1.75} /> Mulai</>
+            )}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleMuteToggle}
+            className="h-11 w-11 text-muted-foreground hover:text-foreground"
+            title={isMuted ? "Aktifkan suara ambient" : "Matikan suara ambient"}
+          >
+            {isMuted ? (
+              <VolumeX className="w-5 h-5 text-muted-foreground" strokeWidth={1.75} />
+            ) : (
+              <Volume2 className="w-5 h-5 text-primary" strokeWidth={1.75} />
+            )}
+          </Button>
+        </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Volume2 className="w-4 h-4" />
-          <span>Musik ambient tenang akan dimainkan saat latihan</span>
+          <Volume2 className="w-4 h-4 text-primary" />
+          <span>
+            {isMuted
+              ? "Suara ambient dimatikan"
+              : "Suara ambient hangat dimainkan saat latihan"}
+          </span>
         </div>
 
         <p className="text-sm text-muted-foreground text-center max-w-sm">
