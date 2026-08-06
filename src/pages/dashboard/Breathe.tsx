@@ -10,21 +10,42 @@ const PHASES = [
   { label: "Hembuskan", duration: 6000 },
 ] as const;
 
+// URL Audio MP3 Ambience Supabase
+const CALM_MUSIC_URL =
+  "https://bpyprnyfqjodbhiqrlnp.supabase.co/storage/v1/object/sign/files/ambience.mp3?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmJjM2M2OC00MDlkLTRlZDYtYTg0Mi1kODViODE5MTNiMTciLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJmaWxlcy9hbWJpZW5jZS5tcDMiLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg2MDE1MTQyLCJleHAiOjE4NzIzMjg3NDJ9.LAwac0gyhEc1AcVAAvc-jx6DR63xKyyBj9kwtOUQt0w";
+
 const Breathe = () => {
   const location = useLocation();
   const [running, setRunning] = useState(false);
   const [phaseIdx, setPhaseIdx] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Clean up audio when switching routes
   useEffect(() => {
     return () => {
       setRunning(false);
       setPhaseIdx(0);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
       ambientSynth.stop();
     };
   }, [location.pathname]);
 
+  // Initialize primary MP3 Audio
+  useEffect(() => {
+    if (!audioRef.current) {
+      const audio = new Audio(CALM_MUSIC_URL);
+      audio.loop = true;
+      audio.volume = 0.4;
+      audioRef.current = audio;
+    }
+  }, []);
+
+  // Timer loop for breathing phases
   useEffect(() => {
     if (!running) return;
 
@@ -46,11 +67,29 @@ const Breathe = () => {
     };
   }, [phaseIdx, running]);
 
+  // Handle Play/Pause with MP3 and fallback to Web Audio Synth
   useEffect(() => {
-    if (running && !isMuted) {
-      ambientSynth.start();
-    } else {
+    if (!running || isMuted) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
       ambientSynth.stop();
+      return;
+    }
+
+    if (audioRef.current) {
+      audioRef.current
+        .play()
+        .then(() => {
+          ambientSynth.stop();
+        })
+        .catch((err) => {
+          console.warn("Audio MP3 play failed, activating Web Audio synth fallback:", err);
+          ambientSynth.start();
+        });
+    } else {
+      ambientSynth.start();
     }
   }, [running, isMuted]);
 
@@ -62,8 +101,7 @@ const Breathe = () => {
   };
 
   const handleMuteToggle = () => {
-    const nextMuted = ambientSynth.toggleMute();
-    setIsMuted(nextMuted);
+    setIsMuted((prev) => !prev);
   };
 
   return (
@@ -123,7 +161,7 @@ const Breathe = () => {
           <span>
             {isMuted
               ? "Suara ambient dimatikan"
-              : "Suara ambient hangat dimainkan saat latihan"}
+              : "Musik ambience diputar saat latihan pernapasan"}
           </span>
         </div>
 
