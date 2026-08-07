@@ -13,6 +13,7 @@ import {
   type RegisterFormData,
 } from "@moodmate/lib/validations";
 import { BrandMark } from "@moodmate/components/BrandMark";
+import { SafeImage } from "@moodmate/components/SafeImage";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -60,8 +61,9 @@ const Register = () => {
   return (
     <div className="min-h-screen flex bg-background overflow-hidden">
       <div className="hidden md:flex md:flex-1 relative">
-        <img
-          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80"
+        <SafeImage
+          src="/images/hero-ocean.jpg"
+          fallbackSrc="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80"
           alt="Ocean horizon"
           className="w-full h-full object-cover"
           loading="lazy"

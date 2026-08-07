@@ -17,6 +17,7 @@ import { useHabitSummary } from "@moodmate/hooks/useHabits";
 import { getLast7DaysRange } from "@moodmate/lib/habits";
 import { format } from "date-fns";
 import { toast } from "@moodmate/components/ui/toast";
+import { SafeImage } from "@moodmate/components/SafeImage";
 
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -138,8 +139,9 @@ const Home = () => {
 
       <section className="rounded-lg border border-border bg-card overflow-hidden flex flex-col md:flex-row items-center justify-between p-5 md:p-6 gap-6 shadow-sm">
         <div className="flex items-center gap-5 w-full md:w-auto">
-          <img
-            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=80"
+          <SafeImage
+            src="/images/nature-card.jpg"
+            fallbackSrc="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=80"
             alt="Nature landscape"
             className="w-24 h-24 sm:w-28 sm:h-28 rounded-md object-cover shrink-0"
             loading="lazy"

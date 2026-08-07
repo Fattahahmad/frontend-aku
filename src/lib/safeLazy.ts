@@ -18,13 +18,17 @@ export function safeLazy<T extends ComponentType<unknown>>(
       return component;
     } catch (error: unknown) {
       const err = error as { message?: string; name?: string } | null;
+      const msg = (err?.message || "").toLowerCase();
+
       const isChunkError =
-        err?.message?.includes("Failed to fetch dynamically imported module") ||
-        err?.message?.includes("Importing a module script failed") ||
+        msg.includes("dynamically imported module") ||
+        msg.includes("failed to fetch") ||
+        msg.includes("importing a module") ||
+        msg.includes("loading chunk") ||
         err?.name === "ChunkLoadError";
 
       if (isChunkError && !pageHasBeenRefreshed) {
-        console.warn("Chunk load error detected (new deployment). Reloading page...");
+        console.warn("Chunk load error detected (new deployment). Auto-reloading page...");
         window.sessionStorage.setItem("chunk_retry_refreshed", "true");
         window.location.reload();
         return new Promise<{ default: T }>(() => {});

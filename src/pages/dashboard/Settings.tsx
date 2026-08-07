@@ -12,6 +12,7 @@ import { toast } from "@moodmate/components/ui/toast";
 import { getApiErrorMessage } from "@moodmate/lib/api";
 import { getFirstZodError, profileNameSchema } from "@moodmate/lib/validations";
 import { useTheme } from "next-themes";
+import { SafeImage } from "@moodmate/components/SafeImage";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -37,8 +38,8 @@ const Settings = () => {
         navigate("/login");
       },
       onError: () => {
-        toast.error("Gagal keluar, tapi anda akan di-redirect.");
-        setTimeout(() => navigate("/login"), 1000);
+        toast.error("Gagal keluar dari server. Sesi lokal dibersihkan.");
+        navigate("/login");
       },
     });
   };
@@ -81,9 +82,10 @@ const Settings = () => {
       </header>
 
       <section className="flex items-center gap-4 pb-8 border-b border-border">
-        <div className="w-14 h-14 rounded-full bg-accent flex items-center justify-center">
-          <img
-            src={profile?.avatar_url ?? "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"}
+        <div className="w-14 h-14 rounded-full bg-accent flex items-center justify-center overflow-hidden">
+          <SafeImage
+            src={profile?.avatar_url || "/images/default-avatar.jpg"}
+            fallbackSrc="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
             alt="Profil"
             className="w-full h-full rounded-full object-cover"
           />

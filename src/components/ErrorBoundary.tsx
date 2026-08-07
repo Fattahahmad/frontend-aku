@@ -27,10 +27,13 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private handleReset = () => {
+    window.sessionStorage.removeItem("chunk_retry_refreshed");
     this.setState({ hasError: false, error: null });
+    window.location.reload();
   };
 
   private handleReload = () => {
+    window.sessionStorage.removeItem("chunk_retry_refreshed");
     window.location.reload();
   };
 
@@ -40,9 +43,13 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
+      const msg = (this.state.error?.message || "").toLowerCase();
       const isChunkError =
-        this.state.error?.message?.includes("Failed to fetch dynamically imported module") ||
-        this.state.error?.message?.includes("Importing a module script failed");
+        msg.includes("dynamically imported module") ||
+        msg.includes("failed to fetch") ||
+        msg.includes("importing a module") ||
+        msg.includes("loading chunk") ||
+        this.state.error?.name === "ChunkLoadError";
 
       return (
         <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground">
@@ -57,7 +64,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {isChunkError
-                  ? "Aplikasi telah diperbarui ke versi terbaru di server. Muat ulang halaman untuk memperbarui tampilan."
+                  ? "Aplikasi telah diperbarui ke versi terbaru di server. Klik tombol di bawah untuk memuat versi terbaru."
                   : "Tampilan mengalami kendala saat memuat data. Jangan khawatir, Anda dapat mencoba memuat ulang."}
               </p>
             </div>

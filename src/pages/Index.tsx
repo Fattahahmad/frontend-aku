@@ -3,13 +3,17 @@ import { Button } from "@moodmate/components/ui/button";
 import { NotebookPen, Brain, LineChart, Menu, X, Quote } from "lucide-react";
 import { useState } from "react";
 import { BrandMark } from "@moodmate/components/BrandMark";
+import { useAuth } from "@moodmate/auth/useAuth";
+import { SafeImage } from "@moodmate/components/SafeImage";
 
 const Index = () => {
   const [open, setOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur border-b border-border">
-        <nav className="container mx-auto flex items-center justify-between py-5">
+        <nav className="container mx-auto flex items-center justify-between py-5 px-6 md:px-0">
           <Link to="/" className="flex items-center gap-2.5 font-semibold text-lg tracking-tight">
             <BrandMark size="sm" />
             AKU
@@ -19,8 +23,16 @@ const Index = () => {
             <a href="#how" className="hover:text-foreground transition">How it works</a>
             <a href="#testimonials" className="hover:text-foreground transition">Stories</a>
             <div className="flex items-center gap-2">
-              <Link to="/login"><Button variant="ghost" size="sm">Log in</Button></Link>
-              <Link to="/register"><Button size="sm">Sign up</Button></Link>
+              {isAuthenticated ? (
+                <Link to="/dashboard/home">
+                  <Button size="sm">Ke Dashboard</Button>
+                </Link>
+              ) : (
+                <>
+                  <Link to="/login"><Button variant="ghost" size="sm">Log in</Button></Link>
+                  <Link to="/register"><Button size="sm">Sign up</Button></Link>
+                </>
+              )}
             </div>
           </div>
           <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
@@ -32,8 +44,16 @@ const Index = () => {
             <a href="#features" onClick={() => setOpen(false)} className="text-muted-foreground">Features</a>
             <a href="#how" onClick={() => setOpen(false)} className="text-muted-foreground">How it works</a>
             <a href="#testimonials" onClick={() => setOpen(false)} className="text-muted-foreground">Stories</a>
-            <Link to="/login"><Button variant="outline" className="w-full">Log in</Button></Link>
-            <Link to="/register"><Button className="w-full">Sign up</Button></Link>
+            {isAuthenticated ? (
+              <Link to="/dashboard/home" onClick={() => setOpen(false)}>
+                <Button className="w-full">Ke Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setOpen(false)}><Button variant="outline" className="w-full">Log in</Button></Link>
+                <Link to="/register" onClick={() => setOpen(false)}><Button className="w-full">Sign up</Button></Link>
+              </>
+            )}
           </div>
         )}
       </header>
@@ -48,8 +68,10 @@ const Index = () => {
             AKU membantu kamu melacak mood, memahami pola emosi, melatih fokus, dan membangun kebiasaan baru dalam satu ruang yang tenang.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link to="/register">
-              <Button size="lg" className="px-8">Mulai Melacak</Button>
+            <Link to={isAuthenticated ? "/dashboard/home" : "/register"}>
+              <Button size="lg" className="px-8">
+                {isAuthenticated ? "Ke Dashboard" : "Mulai Melacak"}
+              </Button>
             </Link>
             <a href="#features">
               <Button size="lg" variant="outline" className="px-8">Pelajari lebih lanjut</Button>
@@ -58,8 +80,9 @@ const Index = () => {
         </div>
         <div className="relative mx-auto w-full max-w-md md:max-w-lg">
           <div className="absolute -inset-4 rounded-full bg-accent/40 blur-3xl" />
-          <img
-            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80"
+          <SafeImage
+            src="/images/hero-ocean.jpg"
+            fallbackSrc="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80"
             alt="Ocean horizon"
             className="relative w-full aspect-[5/4] md:aspect-[4/3] object-cover rounded-md"
             loading="lazy"
@@ -139,8 +162,10 @@ const Index = () => {
           <p className="relative text-muted-foreground mt-4 text-lg max-w-lg mx-auto">
             Gratis untuk dimulai. Tanpa tekanan. Cukup ruang stabil untuk melacak, merefleksikan, dan berkembang.
           </p>
-          <Link to="/register" className="inline-block mt-8 relative">
-            <Button size="lg" className="px-8">Daftar Gratis!</Button>
+          <Link to={isAuthenticated ? "/dashboard/home" : "/register"} className="inline-block mt-8 relative">
+            <Button size="lg" className="px-8">
+              {isAuthenticated ? "Ke Dashboard" : "Daftar Gratis!"}
+            </Button>
           </Link>
         </div>
       </section>
