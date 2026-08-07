@@ -1,4 +1,4 @@
-import { useState, ImgHTMLAttributes } from "react";
+import { useState, useEffect, ImgHTMLAttributes } from "react";
 
 interface SafeImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   src: string;
@@ -9,6 +9,12 @@ interface SafeImageProps extends ImgHTMLAttributes<HTMLImageElement> {
 export const SafeImage = ({ src, fallbackSrc, alt, className, ...props }: SafeImageProps) => {
   const [imgSrc, setImgSrc] = useState<string>(src);
   const [hasFailed, setHasFailed] = useState<boolean>(false);
+
+  // Sync state when src prop changes dynamically (e.g. after async API fetch)
+  useEffect(() => {
+    setImgSrc(src);
+    setHasFailed(false);
+  }, [src]);
 
   const handleError = () => {
     if (!hasFailed && fallbackSrc) {
