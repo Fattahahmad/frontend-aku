@@ -8,13 +8,17 @@ export function safeLazy<T extends ComponentType<unknown>>(
   factory: () => Promise<{ default: T }>
 ) {
   return lazy(async () => {
-    const pageHasBeenRefreshed = JSON.parse(
-      window.sessionStorage.getItem("chunk_retry_refreshed") || "false"
+    const refreshedTime = parseInt(
+      window.sessionStorage.getItem("chunk_retry_timestamp") || "0",
+      10
     );
+    const now = Date.now();
+    // Jika auto-reload terakhir sudah lebih dari 10 detik lalu, reset penanda
+    const pageHasBeenRefreshedRecently = now - refreshedTime < 10000;
 
     try {
       const component = await factory();
-      window.sessionStorage.setItem("chunk_retry_refreshed", "false");
+      window.sessionStorage.removeItem("chunk_retry_timestamp");
       return component;
     } catch (error: unknown) {
       const err = error as { message?: string; name?: string } | null;
@@ -27,9 +31,9 @@ export function safeLazy<T extends ComponentType<unknown>>(
         msg.includes("loading chunk") ||
         err?.name === "ChunkLoadError";
 
-      if (isChunkError && !pageHasBeenRefreshed) {
-        console.warn("Chunk load error detected (new deployment). Auto-reloading page...");
-        window.sessionStorage.setItem("chunk_retry_refreshed", "true");
+      if (isChunkError && !pageHasBeenRefreshedRecently) {
+        console.warn("Chunk load error detected (new Vercel deployment). Auto-reloading page...");
+        window.sessionStorage.setItem("chunk_retry_timestamp", now.toString());
         window.location.reload();
         return new Promise<{ default: T }>(() => {});
       }
